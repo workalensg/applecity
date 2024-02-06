@@ -1,0 +1,185 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-currency" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumbs in breadcrumb %}
+                <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-currency" class="form-horizontal">
+                    <div class="form-group required">
+                        <label class="col-sm-2 control-label" for="input-title">{{ entry_title }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="title" value="{{ title }}" placeholder="{{ entry_title }}" id="input-title" class="form-control" />
+                            {% if error_title %}
+                            <div class="text-danger">{{ error_title }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="col-sm-2 control-label" for="input-code"><span data-toggle="tooltip" title="{{ help_code }}">{{ entry_code }}</span></label>
+                        <div class="col-sm-10">
+                            <input type="text" name="code" value="{{ code }}" placeholder="{{ entry_code }}" id="input-code" class="form-control" />
+                            {% if error_code %}
+                            <div class="text-danger">{{ error_code }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group required">
+                        <label class="col-sm-2 control-label" for="input-realcode">{{ entry_realcode }}</label>
+                        <div class="col-sm-10">
+                            <select name="realcode" class="form-control" id="input-realcode">
+                                {% for key, val in codes  %}
+                                <option value="{{ key }}" {% if realcode is defined and realcode == key %}selected="selected"{% endif %}>{{ key }} - {{ val }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-symbol-left">{{ entry_symbol_left }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="symbol_left" value="{{ symbol_left }}" placeholder="{{ entry_symbol_left }}" id="input-symbol-left" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-symbol-right">{{ entry_symbol_right }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="symbol_right" value="{{ symbol_right }}" placeholder="{{ entry_symbol_right }}" id="input-symbol-right" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-decimal-place">{{ entry_decimal_place }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="decimal_place" value="{{ decimal_place }}" placeholder="{{ entry_decimal_place }}" id="input-decimal-place" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-value"><span data-toggle="tooltip" title="{{ help_value }}">{{ entry_value }}</span></label>
+                        <div class="col-sm-10">
+                            <input type="text" name="value" value="{{ value }}" placeholder="{{ entry_value }}" id="input-value" class="form-control" onchange="$('#input-value-official').val(1/this.value);" {% if code == config_currency %}disabled{% endif %} />
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-nominal">{{ entry_nominal }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="nominal" value="{{ nominal }}" placeholder="{{ entry_nominal }}" id="input-nominal" class="form-control" {% if code == config_currency %}disabled{% endif %} />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-value-official">{{ entry_value_official }}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="value_official" value="{{ value_official }}" placeholder="{{ entry_value_official }}" id="input-value-official" class="form-control" onchange="$('#input-value').val(1/this.value*$('#input-nominal').val());" {% if code == config_currency %}disabled{% endif %} />
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-value-correction">{{ entry_correction }}</label>
+                        <div class="col-sm-10">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <select name="correction_prefix" class="form-control"><option value="+" {% if correction_prefix is defined and correction_prefix == '+' %}selected{% endif %} >+</option><option value="-" {% if correction_prefix is defined and correction_prefix == '-' %}selected{% endif %}>-</option></select>
+                                </div>
+                                <div class="col-sm-4">
+                                    <input type="text" name="correction" value="{% if correction %}{{ correction }}{% endif %}" id="correction" class="form-control"/>
+                                </div>
+                                <div class="col-sm-4">%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{ entry_round }}</label>
+                        <div class="col-sm-10">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <select name="round" class="form-control">
+                                        <option value="">{{ text_noround }}</option>
+                                        <option value="digitx9" {% if currency_plus_round is defined and currency_plus_round == 'digitx9'  %}selected{% endif %} >{{ text_digitx9 }}</option>
+                                        <option value="digit99" {% if currency_plus_round is defined and currency_plus_round == 'digit99'  %}selected{% endif %} >{{ text_digit99 }}</option>
+                                        <option value="digit01" {% if currency_plus_round is defined and currency_plus_round == 'digit01'  %}selected{% endif %} >{{ text_digit01 }}</option>
+                                        <option value="digit001" {% if currency_plus_round is defined and currency_plus_round == 'digit001'  %}selected{% endif %} >{{ text_digit001 }}</option>
+                                        <option value="digit0001" {% if currency_plus_round is defined and currency_plus_round == 'digit0001'  %}selected{% endif %} >{{ text_digit0001 }}</option>
+                                        <option value="digit1" {% if currency_plus_round is defined and currency_plus_round == 'digit1'  %}selected{% endif %} >{{ text_digit1 }}</option>
+                                        <option value="digit5" {% if currency_plus_round is defined and currency_plus_round == 'digit5'  %}selected{% endif %} >{{ text_digit5 }}</option>
+                                        <option value="digit9" {% if currency_plus_round is defined and currency_plus_round == 'digit9'  %}selected{% endif %} >{{ text_digit9 }}</option>
+                                        <option value="digit10" {% if currency_plus_round is defined and currency_plus_round == 'digit10'  %}selected{% endif %} >{{ text_digit10 }}</option>
+                                        <option value="digit50" {% if currency_plus_round is defined and currency_plus_round == 'digit50'  %}selected{% endif %} >{{ text_digit50 }}</option>
+                                        <option value="digit90" {% if currency_plus_round is defined and currency_plus_round == 'digit90'  %}selected{% endif %} >{{ text_digit90 }}</option>
+                                        <option value="digit100" {% if currency_plus_round is defined and currency_plus_round == 'digit100'  %}selected{% endif %} >{{ text_digit100 }}</option>
+                                        <option value="digit1000" {% if currency_plus_round is defined and currency_plus_round == 'digit1000'  %}selected{% endif %} >{{ text_digit1000 }}</option>
+                                        <option value="digit10000" {% if currency_plus_round is defined and currency_plus_round == 'digit10000'  %}selected{% endif %} >{{ text_digit10000 }}</option>
+                                        <option value="digit100000" {% if currency_plus_round is defined and currency_plus_round == 'digit100000'  %}selected{% endif %} >{{ text_digit100000 }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-4">
+                                    <select name="round_type" class="form-control">
+                                        <option value="round_default">{{ text_round_default }}</option>
+                                        <option value="round_ceil" {% if currency_plus_round_type is defined and currency_plus_round_type == 'round_ceil'  %}selected{% endif %} >{{ text_round_ceil }}</option>
+                                        <option value="round_floor" {% if currency_plus_round_type is defined and currency_plus_round_type == 'round_floor'  %}selected{% endif %} >{{ text_round_floor }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-auto-update-course">{{ entry_auto_update_course }}</label>
+                        <div class="col-sm-10">
+                            <input type="radio" name="auto_update_course" value="1" {% if auto_update_course is defined and auto_update_course == 1 %}checked="checked"{% endif %} />
+                            {{ text_yes }}
+                            <input type="radio" name="auto_update_course" value="0" {% if auto_update_course is defined and auto_update_course == 0 %}checked="checked"{% endif %} />
+                            {{ text_no }}
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+                        <div class="col-sm-10">
+                            <select name="status" id="input-status" class="form-control">
+                                {% if status %}
+                                <option value="1" selected="selected">{{ text_enabled }}</option>
+                                <option value="0">{{ text_disabled }}</option>
+                                {% else %}
+                                <option value="1">{{ text_enabled }}</option>
+                                <option value="0" selected="selected">{{ text_disabled }}</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="currency_id" value="{{ currency_id }}" />
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{ footer }}

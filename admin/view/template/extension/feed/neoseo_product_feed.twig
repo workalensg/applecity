@@ -1,0 +1,424 @@
+{{header}}{{column_left}}
+
+<div id="content">
+
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                {% if license_error is not defined %}
+                    <button type="submit" name="action" value="save" form="form" data-toggle="tooltip"
+                            title="{{button_save}}" class="btn btn-primary"><i
+                                class="fa fa-save"></i> {{button_save}}</button>
+                    <button type="submit" name="action" value="save_and_close" form="form" data-toggle="tooltip"
+                            title="{{button_save_and_close}}" class="btn btn-default"><i
+                                class="fa fa-save"></i> {{button_save_and_close}}</button>
+                {% else %}
+                    <a href="{{recheck}}" data-toggle="tooltip" title="{{button_recheck}}"
+                       class="btn btn-primary"/><i class="fa fa-check"></i> {{button_recheck}}</a>
+                {% endif %}
+                <a href="{{close}}" data-toggle="tooltip" title="{{button_close}}"
+                   class="btn btn-default"><i class="fa fa-close"></i> {{button_close}}</a>
+            </div>
+            <img width="36" height="36" style="float:left" src="view/image/neoseo.png" alt=""/>
+            <h1>{{heading_title_raw ~ ' ' ~ text_module_version}}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{breadcrumb.href}}">{{breadcrumb.text}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i> {{error_warning}}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success is defined and  success is not empty %}
+            <div class="alert alert-success">
+                <i class="fa fa-check-circle"></i>
+                {{success}}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#tab-general" data-toggle="tab">{{tab_general}}</a>
+                   </li>
+                    {% if license_error is not defined %}
+                        <li id="title_tab_feeds">
+                            <a id="href_tab_feeds" href="#tab-feeds" data-toggle="tab">{{tab_feeds}}</a>
+                        </li>
+                    {% endif %}
+                    {% if license_error is not defined %}
+                        <li id="title_tab_formats">
+                            <a id="href_tab_formats" href="#tab-formats" data-toggle="tab">{{tab_formats}}</a>
+                        </li>
+                    {% endif %}
+                    {% if license_error is not defined %}
+                        <li>
+                            <a href="#tab-fields" data-toggle="tab">{{tab_fields}}</a>
+                        </li>
+                    {% endif %}
+                    {% if license_error is not defined %}
+                        <li>
+                            <a href="#tab-logs" data-toggle="tab">{{tab_logs}}</a>
+                        </li>
+                    {% endif %}
+                    <li><a href="#tab-support" data-toggle="tab">{{tab_support}}</a></li>
+                    <li><a href="#tab-usefull" data-toggle="tab">{{ tab_usefull }}</a></li>
+                    <li><a href="#tab-license" data-toggle="tab">{{tab_license}}</a></li>
+                </ul>
+                <form action="{{save}}" method="post" enctype="multipart/form-data" id="form">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab-general">
+                            {% if license_error is not defined %}
+                                {{ widgets.dropdown('status',{ 0: text_disabled, 1: text_enabled }) }}
+								{{ widgets.dropdown('check_encode',{ 0: text_disabled, 1: text_enabled }) }}
+                                {{ widgets.dropdown('type',{ 0: text_link, 1: text_cron }) }}
+                                {% if neoseo_product_feed_status is defined and neoseo_product_feed_status == 1 %}
+                                    {{ widgets.text('cron') }}
+                                {% endif %}
+                            {% else %}
+                                {{ license_error }}
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane" id="tab-feeds">
+                            {% if neoseo_product_feed_status is defined and neoseo_product_feed_status == 1 %}
+                                <div class="table-responsive">
+                                    <div class="form-group pull-right">
+                                        <a href="{{add}}" data-toggle="tooltip"
+                                           title="{{button_add}}" class="btn btn-primary"><i
+                                                    class="fa fa-plus"></i></a>
+                                    </div>
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                        <tr>
+                                            <td class="text-center">{{entry_feed_name}}</td>
+                                            <td class="text-center">{{entry_feed_format_name}}</td>
+                                            <td class="text-center">{{entry_feed_status}}</td>
+                                            <td class="text-center">{{entry_feed_demand}}</td>
+                                            <td class="text-center">{{entry_generate}}</td>
+                                            <td class="text-center">{{entry_feed_action}}</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if feeds is defined and feeds is not empty%}
+                                            {% for id_format, feed in feeds %}
+                                                <tr>
+                                                    <td class="text-left">
+                                                        {{feed.feed_name}}
+                                                    </td>
+                                                    <td class="text-left">
+
+                                                        {% if array_formats[feed.id_format] is defined and array_formats[feed.id_format] is not empty %} {{array_formats[feed.id_format]}} {% endif %}
+                                                    </td>
+                                                    <td class="text-left">
+                                                        {% if feed.status == 1 %} Включено {% else %} Отключено {% endif %}
+                                                    </td>
+                                                    <td class="text-left">
+                                                        <a target="_blank" class="by_demand"
+                                                           href="{{feed.feed_demand}}">{{feed.feed_demand}}</a>
+                                                        <div class="by_cron">
+                                                            {% if feed.feed_cron_date is defined and feed.feed_cron_date is not empty %}
+                                                                <p>1.
+                                                                    <a target="_blank"
+                                                                       href="{{feed.feed_cron}}">{{feed.feed_cron}}</a>
+                                                                </p>
+                                                                <p>2.
+                                                                    <a target="_blank"
+                                                                       href="{{feed.feed_cron_link}}">{{feed.feed_cron_link}}</a>
+                                                                </p>
+                                                                <p style="color:green">Последнее
+                                                                    изменение: {{feed.feed_cron_date}}</p>
+                                                            {% else %}
+                                                                <p>1. {{feed.feed_cron}}</p>
+                                                                <p>2. {{feed.feed_cron_link}}</p>
+                                                                <p style="color:red">файл еще не создан</p>
+                                                            {% endif %}
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <a onclick="generate('#progress-{{feed.product_feed_id}}', {{feed.image_width}}, {{feed.image_height}} ); return false;"
+                                                           title="{{button_generate}}" class="btn btn-primary">
+                                                            <i class="fa fa-cog"></i> {{button_cache_generate}}
+                                                        </a>
+                                                        <div id="progress-{{feed.product_feed_id}}" class="progress"
+                                                             style="margin-top:20px; display:none">
+                                                            <div class="progress-bar progress-bar-success progress-bar-striped"
+                                                                 role="progressbar" aria-valuenow="0" aria-valuemin="0"
+                                                                 aria-valuemax="100" style="width:0%">0%
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <a href="{{feed.edit}}" data-toggle="tooltip"
+                                                           title="{{button_edit}}" class="btn btn-primary"><i
+                                                                    class="fa fa-pencil"></i></a>
+                                                        <a onclick="deleteItem('{{feed.delete}}')"
+                                                           data-toggle="tooltip" title="{{button_delete}}"
+                                                           class="btn btn-danger"><i class="fa fa-trash-o"></i></a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td class="text-center" colspan="9">{{text_no_results}}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6 text-left">{{pagination}}</div>
+                                    <div class="col-sm-6 text-right">{{results}}</div>
+                                </div>
+                            {% else %}
+                                {{ error_status_disabled }}
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane" id="tab-formats">
+                            {% if neoseo_product_feed_status is defined and neoseo_product_feed_status == 1 %}
+                                <div class="table-responsive">
+                                    <div class="form-group pull-right">
+                                        <a href="{{add_formats}}" data-toggle="tooltip"
+                                           title="{{button_add}}" class="btn btn-primary"><i
+                                                    class="fa fa-plus"></i></a>
+                                        <a href="{{ default_formats }}" id="default_formats" data-toggle="tooltip"
+                                           title="{{ text_default_format }}" class="btn btn-primary">
+                                            {{ button_default_format }}</a>
+                                    </div>
+                                    <table class="table table-bordered table-hover table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <td class="text-center">{{entry_feed_format_name}}</td>
+                                            <td class="text-center">{{entry_format_xml}}</td>
+                                            <td class="text-center">{{entry_feed_action}}</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if list_formats %}
+                                            {% for format in list_formats %}
+                                                <tr>
+                                                    <td class="text-left"
+                                                        style="width: 289px;">{{format.feed_format_name}}</td>
+                                                    <td class="text-left">
+                                                        <pre style="padding: 0; height:200px; width: 600px; overflow:auto;">{{format.format_xml}}</pre>
+                                                    </td>
+                                                    <td class="text-center" style="width: 150px;">
+                                                        <a href="{{format.edit}}" data-toggle="tooltip"
+                                                           title="{{button_edit}}" class="btn btn-primary"><i
+                                                                    class="fa fa-pencil"></i></a>
+                                                        <a onclick="deleteItem('{{format.delete}}')"
+                                                           data-toggle="tooltip" title="{{button_delete}}"
+                                                           class="btn btn-danger"><i class="fa fa-trash-o"></i></a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td class="text-center" colspan="9">{{text_no_results}}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                <div class="col-sm-6 text-left">{{pagination_formats}}</div>
+                                <div class="col-sm-6 text-right">{{results_formats}}</div>
+                            </div>
+                            {% else %}
+                                {{ error_status_disabled }}
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane" id="tab-fields">
+                            {% if neoseo_product_feed_status is defined and neoseo_product_feed_status == 1 %}
+                                <table class="table table-bordered table-hover" id="items-table" width="50%">
+                                    <thead>
+                                    <tr>
+                                        <td width="200px" class="left">{{entry_field_list_name}}</td>
+                                        <td>{{entry_field_list_desc}}</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for field_name, field_desc in fields %}
+                                        <tr>
+                                            <td class="left">{{field_name}}</td>
+                                            <td>{{field_desc}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                {{ error_status_disabled }}
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane" id="tab-logs">
+                            {{widgets.debug_download_logs('debug',{ 0: text_disabled, 1: text_enabled}, clear, download, button_clear_log, button_download_log)}}
+                            <textarea
+                                    style="width: 100%; height: 300px; padding: 5px; border: 1px solid #CCCCCC; background: #FFFFFF; overflow: scroll;">{{logs}}</textarea>
+                        </div>
+                        <div class="tab-pane" id="tab-support">
+                            {{mail_support}}
+                        </div>
+                        <div class="tab-pane" id="tab-license">
+                            {{ widgets.licenseField() }}
+                            {{module_licence}}
+                        </div>
+                        <div class="tab-pane" id="tab-usefull">
+                            {{ widgets.usefullLinks() }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    if (window.location.hash.indexOf('#tab') == 0 && $("[href=" + window.location.hash + "]").length) {
+        $(".panel-body > .nav-tabs li").removeClass("active");
+        $("[href=" + window.location.hash + "]").parents('li').addClass("active");
+        $(".panel-body:first .tab-content:first .tab-pane:first").removeClass("active");
+        $(window.location.hash).addClass("active");
+    }
+    $(".nav-tabs li a").click(function () {
+        var url = $(this).prop('href');
+        window.location.hash = url.substring(url.indexOf('#'));
+    });
+    // Специальный фикс системной функции, поскольку даниель понятия не имеет о том что в url может быть еще и hash
+    // и по итогу этот hash становится частью user_token
+    function getURLVar(key) {
+        var value = [];
+        var url = String(document.location);
+        if (url.indexOf('#') != -1) {
+            url = url.substring(0, url.indexOf('#'));
+        }
+        var query = url.split('?');
+        if (query[1]) {
+            var part = query[1].split('&');
+            for (i = 0; i < part.length; i++) {
+                var data = part[i].split('=');
+                if (data[0] && data[1]) {
+                    value[data[0]] = data[1];
+                }
+            }
+
+            if (value[key]) {
+                return value[key];
+            } else {
+                return '';
+            }
+        }
+    }
+
+</script>
+<script type="text/javascript"><!--
+    function deleteItem(href) {
+        if(confirm('Удалить?')){
+            location = href;
+        }else{
+            return false;
+        }
+    }
+
+    {% if license_error is not defined %}
+    $("#neoseo_product_feed_type").change(function () {
+
+        if (Number($(this).val()) == 1) {
+            $("#field_cron").show();
+            $(".by_demand").hide();
+            $(".by_cron").show();
+        } else {
+            $("#field_cron").hide();
+            $(".by_demand").show();
+            $(".by_cron").hide();
+        }
+    });
+    $("#neoseo_product_feed_type").trigger("change");
+    var products = {{ids|json_encode()}};
+    var productsCurrent = [];
+    var generateProgressId = 0;
+    var generateWidth = 600;
+    var generateHeight = 600;
+    function generateNext() {
+        var product = productsCurrent.shift();
+        if (!product) {
+            $(generateProgressId).hide();
+            return;
+        }
+        var index = products.length - productsCurrent.length;
+        var total = products.length;
+        var percent = Number(index * 100 / total).toFixed(0);
+        $(generateProgressId + " .progress-bar").prop("aria-valuenow", percent);
+        $(generateProgressId + " .progress-bar").css("width", percent + "%");
+        $(generateProgressId + " .progress-bar").html(index + " из " + total);
+        $.ajax({
+            url: '{{generate_url|replace({'&amp;': "&"})}}',
+            data: {id: product, width: generateWidth, height: generateHeight},
+            dataType: 'json'
+        }).done(function () {
+            generateNext();
+        });
+    }
+
+    function generate(progressId, width, height) {
+        productsCurrent = products.slice(0);
+        generateProgressId = progressId;
+        generateWidth = width;
+        generateHeight = height;
+        $(generateProgressId).show();
+        generateNext();
+    }
+
+    function updateProductFeed(feed_id) {
+
+        user_token = '{{user_token}}';
+        $.ajax({
+            url: 'index.php?route=feed/neoseo_product_feed/updateProductFeedCategories&user_token=' + user_token,
+            type: 'post',
+            data: 'feed_id=' + feed_id,
+            dataType: 'json',
+            success: function (json) {
+                $('.alert').remove();
+                if (json['error']) {
+                    $('#content > .container-fluid').prepend('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+                }
+
+                if (json['success']) {
+                    $('#content > .container-fluid').prepend('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+                }
+            },
+            error: function (request, status, error) {
+                alert(request.responseText);
+            }
+        });
+    }
+    {% endif %}
+
+    //--></script>
+<script type="text/javascript">
+    if (window.location.hash.indexOf('#tab') == 0 && $("[href=" + window.location.hash + "]").length) {
+        $(".panel-body > .nav-tabs li").removeClass("active");
+        $("[href=" + window.location.hash + "]").parents('li').addClass("active");
+        $(".panel-body:first .tab-content:first .tab-pane:first").removeClass("active");
+        $(window.location.hash).addClass("active");
+    }
+    $(".nav-tabs li a").click(function () {
+        var url = $(this).prop('href');
+        window.location.hash = url.substring(url.indexOf('#'));
+    });
+</script>
+<script type="text/javascript">
+    $('#default_formats').click(function (e) {
+        e.preventDefault();
+        if(confirm("{{ text_default_format_confirm }}")){
+            window.location = $(this).prop('href');
+        }
+    });
+</script>
+{{footer}}

@@ -1,0 +1,34 @@
+<modification>
+    <name>Укркредит HYPER Product Models Fix</name>
+	<version>1.1.0</version>
+	<link>https://fringe.com.ua</link>
+	<author>Stealth</author>
+	<code>ukrcredit_HYPER_Product_Models_fix</code>
+	
+	<file path="catalog/controller/extension/module/hpmodel/hpmodel.php">
+		<operation>
+			<search><![CDATA[$result = array();]]></search>
+			<add position="after"><![CDATA[
+		if ($this->config->get('payment_ukrcredits_status')) {
+			$data['ukrcredits_status'] = true;
+			$data['ukrcredits'] = str_replace("\n", '', $this->load->controller('module/ukrcredits'));
+			$data['ukrcredits_selector_button'] = $this->config->get('payment_ukrcredits_settings')['selector_button'];
+			$data['ukrcredits_selector_block'] = $this->config->get('payment_ukrcredits_settings')['selector_block'];
+			$data['ukrcredits_css_custom'] = $this->config->get('payment_ukrcredits_settings')['css_custom'];
+		} else {
+			$data['ukrcredits_status'] = false;
+		}
+			]]></add>
+		</operation>
+	</file>
+	<file path="catalog/view/theme/*/template/extension/module/hpmodel/config.twig">
+		<operation>
+			<search><![CDATA[function hmodel_onchange]]></search>
+			<add position="after"><![CDATA[
+{% if ukrcredits_status %}
+$('{{ ukrcredits_selector_button }}').after('{{ ukrcredits }}');
+{% endif %}	
+]]></add>
+		</operation>
+	</file>
+</modification>

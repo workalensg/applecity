@@ -1,0 +1,18 @@
+<a href="{{ wishlist_link }}" rel="nofollow" class="us-mobile-top-btn us-mobile-top-btn-wishlist d-lg-none h-100">
+    <span class="us-mobile-top-btn-item">
+		<img src="catalog/view/theme/oct_ultrastore/img/wishlist-mobile.svg" alt=""/>
+		<span class="mobile-header-index oct-wishlist-quantity">{{ total_wishlist }}</span>
+	</span>
+</a>
+<a href="{{ compare_link }}" rel="nofollow" class="us-mobile-top-btn us-mobile-top-btn-compare d-lg-none h-100">
+    <span class="us-mobile-top-btn-item">
+		<img src="catalog/view/theme/oct_ultrastore/img/compare-mobile.svg" alt=""/>
+		<span class="mobile-header-index oct-compare-quantity">{{ total_compare }}</span>
+	</span>
+</a>
+<a {% if oct_popup_cart_status is defined and oct_popup_cart_status %}href="javascript:;" onclick="octPopupCart()"{% else %}href="{{ cart_link }}"{% endif %} id="us_cart_mobile" class="us-mobile-top-btn us-mobile-top-btn-cart d-lg-none h-100">
+    <span class="us-mobile-top-btn-item">
+        <img src="catalog/view/theme/oct_ultrastore/img/cart-mobile.svg" alt=""/>
+        <span id="mobile_cart_index" class="mobile-header-index">{{ total_products }}</span>
+    </span>
+</a>

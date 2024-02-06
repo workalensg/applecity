@@ -1,0 +1,242 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="buttons"><div class="pull-right">
+                    <a onclick="update_currency('currency');" data-toggle="tooltip" title="{{ button_updatecurrency }}" class="btn btn-info"><i class="fa fa-usd"></i></a>
+                    <a onclick="update_currency('product');" data-toggle="tooltip" title="{{ button_updateproduct }}" class="btn btn-info"><i class="fa fa-refresh"></i></a>
+                    <button type="submit" form="form-currency" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+                    <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+                <h1>{{ heading_title }}</h1>
+                <ul class="breadcrumb">
+                    {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="container-fluid">
+            {% if error_warning %}
+                <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+            {% endif %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+                </div>
+                <div class="panel-body">
+                    <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-currency" class="form-horizontal">
+                        <input type="hidden" name="{{ name }}_license" size="50" value="{{ currency_plus_license }}" >
+
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#tab-general" data-toggle="tab">{{ tab_general }}</a></li>
+                            {% if is_frontend %}<li><a href="#tab-design" data-toggle="tab">{{ tab_design }}</a></li>{% endif %}
+                            <li><a href="#tab-currency" data-toggle="tab">{{ tab_currency }}</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab-general">
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{ entry_charcode }}</label>
+                                    <div class="col-sm-10">
+                                        <select name="{{ name }}_charcode" class="form-control">
+                                            {% for rkey, rcode in rcodes %}
+                                                {% if currency_plus_charcode == rkey %}
+                                                    <option value="{{ rkey }}" selected="selected">{{ rcode }}</option>
+                                                {% else %}
+                                                    <option value="{{ rkey }}">{{ rcode }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{ entry_round }}</label>
+                                    <div class="col-sm-10">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <select name="{{ name }}_round" class="form-control">
+                                                    <option value="">{{ text_noround }}</option>
+                                                    <option value="digitx9" {% if currency_plus_round is defined and currency_plus_round == 'digitx9'  %}selected{% endif %} >{{ text_digitx9 }}</option>
+                                                    <option value="digit99" {% if currency_plus_round is defined and currency_plus_round == 'digit99'  %}selected{% endif %} >{{ text_digit99 }}</option>
+                                                    <option value="digit01" {% if currency_plus_round is defined and currency_plus_round == 'digit01'  %}selected{% endif %} >{{ text_digit01 }}</option>
+                                                    <option value="digit001" {% if currency_plus_round is defined and currency_plus_round == 'digit001'  %}selected{% endif %} >{{ text_digit001 }}</option>
+                                                    <option value="digit0001" {% if currency_plus_round is defined and currency_plus_round == 'digit0001'  %}selected{% endif %} >{{ text_digit0001 }}</option>
+                                                    <option value="digit1" {% if currency_plus_round is defined and currency_plus_round == 'digit1'  %}selected{% endif %} >{{ text_digit1 }}</option>
+                                                    <option value="digit5" {% if currency_plus_round is defined and currency_plus_round == 'digit5'  %}selected{% endif %} >{{ text_digit5 }}</option>
+                                                    <option value="digit9" {% if currency_plus_round is defined and currency_plus_round == 'digit9'  %}selected{% endif %} >{{ text_digit9 }}</option>
+                                                    <option value="digit10" {% if currency_plus_round is defined and currency_plus_round == 'digit10'  %}selected{% endif %} >{{ text_digit10 }}</option>
+                                                    <option value="digit50" {% if currency_plus_round is defined and currency_plus_round == 'digit50'  %}selected{% endif %} >{{ text_digit50 }}</option>
+                                                    <option value="digit90" {% if currency_plus_round is defined and currency_plus_round == 'digit90'  %}selected{% endif %} >{{ text_digit90 }}</option>
+                                                    <option value="digit100" {% if currency_plus_round is defined and currency_plus_round == 'digit100'  %}selected{% endif %} >{{ text_digit100 }}</option>
+                                                    <option value="digit1000" {% if currency_plus_round is defined and currency_plus_round == 'digit1000'  %}selected{% endif %} >{{ text_digit1000 }}</option>
+                                                    <option value="digit10000" {% if currency_plus_round is defined and currency_plus_round == 'digit10000'  %}selected{% endif %} >{{ text_digit10000 }}</option>
+                                                    <option value="digit100000" {% if currency_plus_round is defined and currency_plus_round == 'digit100000'  %}selected{% endif %} >{{ text_digit100000 }}</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <select name="{{ name }}_round_type" class="form-control">
+                                                    <option value="round_default">{{ text_round_default }}</option>
+                                                    <option value="round_ceil" {% if currency_plus_round_type is defined and currency_plus_round_type == 'round_ceil'  %}selected{% endif %} >{{ text_round_ceil }}</option>
+                                                    <option value="round_floor" {% if currency_plus_round_type is defined and currency_plus_round_type == 'round_floor'  %}selected{% endif %} >{{ text_round_floor }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label"><span data-toggle="tooltip" title="{{ help_currency }}">{{ entry_currency }}</span></label>
+                                    <div class="col-sm-10">
+                                        <select name="config_currency" class="form-control">
+                                            {% for currency in currencies %}
+                                                {% if currency.code == config_currency %}
+                                                    <option value="{{ currency.code }}" selected="selected">{{ currency.title }}</option>
+                                                    {% else %}
+                                                    <option value="{{ currency.code }}">{{ currency.title }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label"><span data-toggle="tooltip" title="{{ help_currency_auto }}">{{ entry_currency_auto }}</span></label>
+                                    <div class="col-sm-10">
+                                        {% if config_currency_auto %}
+                                            <input type="radio" name="config_currency_auto" value="1" checked="checked" />
+                                            {{ text_yes }}
+                                            <input type="radio" name="config_currency_auto" value="0" />
+                                            {{ text_no }}
+                                        {% else %}
+                                            <input type="radio" name="config_currency_auto" value="1" />
+                                            {{ text_yes }}
+                                            <input type="radio" name="config_currency_auto" value="0" checked="checked" />
+                                            {{ text_no }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {% if is_frontend %}
+                            <div class="tab-pane" id="tab-design">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                        <tr>
+                                            <td colspan="2"><h3>{{ entry_show_base_price }}</h3></td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td width="300">{{ entry_show_base_price_product }}</td>
+                                            <td class="text-left"><input type="checkbox" name="{{ name }}_show_base_price" value="1" {% if currency_plus_show_base_price is defined and currency_plus_show_base_price %}checked="checked"{% endif %} /></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="300">{{ entry_show_base_price_cat }}</td>
+                                            <td class="text-left"><input type="checkbox" name="{{ name }}_show_base_price_cat" value="1" {% if currency_plus_show_base_price_cat is defined and currency_plus_show_base_price_cat %}checked="checked"{% endif %} /></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="300">{{ entry_show_base_price_search }}</td>
+                                            <td class="text-left"><input type="checkbox" name="{{ name }}_show_base_price_search" value="1" {% if currency_plus_show_base_price_search and currency_plus_show_base_price_search %}checked="checked"{% endif %} /></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="300">{{ entry_show_base_price_brand }}</td>
+                                            <td class="text-left"><input type="checkbox" name="{{ name }}_show_base_price_brand" value="1" {% if currency_plus_show_base_price_brand and currency_plus_show_base_price_brand %}checked="checked"{% endif %} /></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="300">{{ entry_show_base_price_special }}</td>
+                                            <td class="text-left"><input type="checkbox" name="{{ name }}_show_base_price_special" value="1" {% if currency_plus_show_base_price_special and currency_plus_show_base_price_special %}checked="checked"{% endif %} /></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="tab-pane" id="tab-currency">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                        <tr>
+                                            <td class="text-left">{{ column_title }}</td>
+                                            <td class="text-left">{{ column_code }}</td>
+                                            <td class="test-left">{{ column_realcode }}</td>
+                                            <td class="text-right">{{ column_value }}</td>
+                                            <td class="text-right">{{ column_nominal }}</td>
+                                            <td class="text-right">{{ column_value_official }}</td>
+                                            <td class="text-right">{{ column_correction }}</td>
+                                            <td class="text-right">{{ column_total_products }}</td>
+                                            <td class="text-left">{{ column_date_modified }}</td>
+                                            <td class="text-right">{{ column_action }}</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if currencies %}
+                                            {% for currency in currencies %}
+                                                <tr>
+                                                    <td class="text-left" width="25%">{{ currency.title }}</td>
+                                                    <td class="text-left">{{ currency.code }}</td>
+                                                    <td class="text-left" width="25%">{{ currency.realcode }} -
+                                                        {% for key, val in codes %}
+                                                            {% if currency.realcode == key %}{{ val }}{% endif %}
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td class="text-right" width="10%">{{ currency.value }}</td>
+                                                    <td class="text-right" width="10%">{{ currency.nominal }}</td>
+                                                    <td class="text-right" width="10%">{{ currency.value_official }}</td>
+                                                    <td class="text-right" width="10%">{{ currency.correction_prefix }} {{ currency.correction }} {{ currency.correction_postfix }}</td>
+                                                    <td class="text-right" width="10%">{{ currency.total_products }}</td>
+                                                    <td class="text-left">{{ currency.date_modified }}</td>
+                                                    <td class="text-right">
+                                                        {% for action in currency.action %}
+                                                        <a href="{{ action.href }}" data-toggle="tooltip" title="{{ button_edit }}" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
+                                                        {% endfor %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td class="text-center" colspan="10">{{ text_no_results }}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="9"></td>
+                                                <td class="text-left"><button type="button" onclick="location = '{{ insert }}'" data-toggle="tooltip" title="{{ button_insert }}" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript"><!--
+
+function update_currency(type) {
+    $.ajax({
+        url:'{{ web_catalog }}index.php?route=wgi/currency_plus&type='+type,
+        dataType: 'json',
+        complete: function() {
+            window.location.href = 'index.php?route=extension/module/currency_plus&user_token={{ user_token }}';
+        },
+
+        error: function(xhr, ajaxOptions, thrownError) {
+            /* alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText); */
+        }
+    });
+}
+//--></script>
+
+{{ footer }}

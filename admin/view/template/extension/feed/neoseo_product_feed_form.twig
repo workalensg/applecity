@@ -1,0 +1,516 @@
+{{header}}{{column_left}}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-attribute" data-toggle="tooltip" title="{{button_save}}"
+                        class="btn btn-primary"><i class="fa fa-save"></i></button>
+                <a href="{{cancel}}" data-toggle="tooltip" title="{{button_cancel}}"
+                   class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+            <img width="36" height="36" style="float:left" src="view/image/neoseo.png" alt="">
+            <h1>{{heading_title_raw}}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{breadcrumb.href}}">{{breadcrumb.text}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{error_warning}}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> {{text_form}}</h3>
+            </div>
+            <div class="panel-body">
+                <form action="{{action}}" method="post" enctype="multipart/form-data" id="form-attribute"
+                      class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-4">{{entry_feed_status}}</label>
+                        <div class="col-sm-8">
+                            <select id="active" name="feed[status]" class="form-control">
+                                <option value="0" {% if feed.status == 0 %} selected="selected" {% endif %}>{{text_disabled}}</option>
+                                <option value="1" {% if feed.status  == 1 %}selected="selected" {% endif %}>{{text_enabled}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4">{{entry_feed_format_name}}</label>
+                        <div class="col-sm-8">
+                            <select id="active" name="feed[id_format]" class="form-control">
+                                {% for id_format, format in formats %}
+                                    <option value="{{format.product_feed_format_id}}"
+                                            {% if id_format == feed.id_format %} selected="selected" {% endif %}>{{format.feed_format_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4">{{entry_feed_name}}</label>
+                        <div class="col-sm-8">
+                            <input name="feed[feed_name]" class="form-control" value="{{feed.feed_name}}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_feed_shortname}}</span>
+                        <div class="col-sm-8">
+                            <input name="feed[feed_shortname]" class="form-control"
+                                   value="{{feed.feed_shortname}}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_store}}</span>
+                        <div class="col-sm-8">
+                            <select id="active" name="feed[store_id]" class="form-control">
+                                {% for store_id, store in stores %}
+                                    <option value="{{store_id}}" {% if store_id == feed.store_id %} selected="selected" {% endif %}>{{store}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_ip_list}}</span>
+                        <div class="col-sm-8">
+                            <textarea id="ip_list" rows="3" style="width:100%" name="feed[ip_list]"
+                                      class="form-control">{{feed.ip_list}}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_language_id}}</span>
+                        <div class="col-sm-8">
+                            <select id="active" name="feed[language_id]" class="form-control">
+                                {% for language_id, language in languages %}
+                                    <option value="{{language_id}}" {% if language_id == feed.language_id %} selected="selected" {% endif %}>{{language}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_use_main_category}}
+                            <br>{{entry_use_main_category_desc}}
+                        </span>
+                        <div class="col-sm-8">
+                            <select id="active" name="feed[use_main_category]" class="form-control">
+                                <option value="0" {% if feed.use_main_category == 0 %} selected="selected" {% endif %}>{{text_disabled}}</option>
+                                <option value="1" {% if feed.use_main_category == 1 %} selected="selected" {% endif %}>{{text_enabled}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4">{{entry_use_categories}}</label>
+                        <div class="col-sm-8">
+                            <select name="feed[use_categories]" class="form-control" id="use_categories">
+                                <option value="0" selected="selected">{{text_none}}</option>
+                                {% for  category in feedMainCategories %}
+                                    {% if category.category_id == feed.use_categories %}
+                                        <option value="{{category.category_id}}"
+                                                selected="selected">{{category.name}}</option>
+                                    {% else %}
+                                        <option value="{{category.category_id}}">{{category.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+
+                            </select>
+                        </div>
+                    </div>
+                    <!-- NeoSeo Exchange1c - begin -->
+                    {% if use_warehouses %}
+                        <div class="form-group">
+                            <label class="col-sm-4">{{entry_use_warehouse_quantity}}</label>
+                            <div class="col-sm-8">
+                                <select name="feed[use_warehouse_quantity]" class='form-control' id="use_warehouse_quantity">
+                                    <option value="0"{% if feed.use_warehouse_quantity == 0 %} selected="selected" {% endif %}>{{text_disabled}}</option>
+                                    <option value="1"{% if feed.use_warehouse_quantity == 1 %} selected="selected" {% endif %}>{{text_enabled}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group show_warehouses">
+                            <span class="col-sm-4">{{entry_warehouse}}</span>
+                            <div class="col-sm-8">
+                                <div class="well well-sm" style="min-height: 150px;max-height: 400px;overflow: auto;">
+                                    {% set class = 'odd' %}
+                                    {% for warehouse_id, warehouse_name  in warehouses %}
+                                        {% if class== "even" %}
+                                            {% set class = 'odd' %}
+                                        {% else %}
+                                            {% set class = 'even' %}
+                                        {% endif %}
+                                        <div class="{{class}}">
+                                            <label><input class="category" type="checkbox" name="feed[warehouses][]"
+                                                          value="{{warehouse_id}}" data="{{warehouse_name}}"
+                                                        {% if warehouse_id in feed.warehouses|split(",") %} checked="checked" {% endif %} />
+                                                {{warehouse_name}}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <button type="button" class="text_select_all btn btn-primary"><i class="fa fa-pencil"></i> {{text_select_all}}</button>
+                                <button type="button" class="text_unselect_all btn btn-danger"><i class="fa fa-pencil"></i> {{text_unselect_all}}</button>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <!-- NeoSeo Exchange1c - end -->
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_categories}}</span>
+                        <div class="col-sm-8" id="list_categories_default">
+                            <div class="well well-sm" style="min-height: 150px;max-height: 400px;overflow: auto;">
+                                {% set class = 'odd' %}
+                                {% for category_id, category in categories %}
+                                    {% if class== "even" %}
+                                        {% set class = 'odd' %}
+                                    {% else %}
+                                        {% set class = 'even' %}
+                                    {% endif %}
+                                    <div class="{{class}}">
+                                        <label><input class="category" type="checkbox" name="feed[categories][]"
+                                                      value="{{category_id}}" data="{{category}}"
+                                                    {% if category_id in feed.categories|split(",") and feed.use_categories == 0 %} checked="checked" {% endif %} />
+                                            {{category}}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button type="button" class="text_select_all btn btn-primary"><i class="fa fa-pencil"></i> {{text_select_all}}</button>
+                            <button type="button" class="text_unselect_all btn btn-danger"><i class="fa fa-pencil"></i> {{text_unselect_all}}</button>
+                        </div>
+                        {% for main_category in feedMainCategories %}
+                            <div class="col-sm-8" id="list_categories_{{main_category.category_id}}">
+                                <div class="well well-sm" style="min-height: 150px;max-height: 400px;overflow: auto;">
+                                    {% set class = "odd" %}
+                                    {% for category in feedCategories %}
+                                        {% if category.parent_id== main_category.category_id %}
+                                            {% if class== "even" %}
+                                                {% set class = 'odd' %}
+                                            {% else %}
+                                                {% set class = 'even' %}
+                                            {% endif %}
+                                            <div class="{{class}}">
+                                                <label><input class="category" type="checkbox" name="feed[categories][]"
+                                                              value="{{category.category_id}}"
+                                                              data="{{category.name}}"
+                                                            {% if category.category_id in feed.categories|split(",") and feed.use_categories == main_category.category_id %} checked="checked" {% endif %} />
+                                                    {{category.name}}</label>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <button type="button" class="text_select_all btn btn-primary"><i class="fa fa-pencil"></i> {{text_select_all}}</button>
+                                <button type="button" class="text_unselect_all btn btn-danger"><i class="fa fa-pencil"></i> {{text_unselect_all}}</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_manufacturers}}</span>
+                        <div class="col-sm-8">
+                            <div class="well well-sm" style="min-height: 150px;max-height: 400px;overflow: auto;">
+                                {% set class = 'odd' %}
+                                {% for manufacturer_id, manufacturer  in manufacturers %}
+                                    {% if class== "even" %}
+                                        {% set class = 'odd' %}
+                                    {% else %}
+                                        {% set class = 'even' %}
+                                    {% endif %}
+                                    <div class="{{class}}">
+                                        <label><input class="category" type="checkbox" name="feed[manufacturers][]"
+                                                      value="{{manufacturer_id}}" data="{{manufacturer}}"
+                                                    {% if manufacturer_id in feed.manufacturers|split(",") %} checked="checked" {% endif %} />
+                                            {{manufacturer}}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button type="button" class="text_select_all btn btn-primary"><i class="fa fa-pencil"></i> {{text_select_all}}</button>
+                            <button type="button" class="text_unselect_all btn btn-danger"><i class="fa fa-pencil"></i> {{text_unselect_all}}</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">
+                            <label class="control-label">{{entry_products}}</label>
+                        </span>
+                        <div class="col-sm-8">
+                            <input type="text" name="product" value="" placeholder="" id="input-product" class="form-control" />
+                            <div id="product-list" class="well well-sm" style="height: 150px; overflow: auto;">
+                                {% for product in feed.product_list %}
+                                    <div id="product-list-{{product.product_id}}"><i class="fa fa-minus-circle"></i> {{product.name}}
+                                        <input type="hidden" name="feed[product_list][]" value="{{product.product_id}}" />
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">
+                            <label class="control-label">{{entry_not_unload}}</label>
+                            <br> {{entry_not_unload_desc}}
+                        </span>
+                        <div class="col-sm-8">
+                            <input type="text" name="not_unload" value="" placeholder="" id="input-not-unload" class="form-control" />
+                            <div id="product-not-unload" class="well well-sm" style="height: 150px; overflow: auto;">
+                                {% for product in feed.product_not_unload %}
+                                    <div id="product-not-unload-{{product.product_id}}"><i class="fa fa-minus-circle"></i> {{product.name}}
+                                        <input type="hidden" name="feed[product_not_unload][]" value="{{product.product_id}}" />
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_currency}}</span>
+                        <div class="col-sm-8">
+                            <select id="active" name="feed[currency]" class="form-control">
+                                {% for currency_id, currency  in currencies %}
+                                    <option value="{{currency_id}}" {% if currency_id==feed.currency %} selected="selected" {% endif %}>{{currency}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class=" form-group">
+                        <span class="col-sm-4">{{entry_use_original_images}}</span>
+                        <div class="col-sm-8">
+                            <select name="feed[use_original_images]" class="form-control" id="use_original_images">
+                                <option value="0" {% if feed.use_original_images == 0 %} selected="selected" {% endif %}>{{text_disabled}}</option>
+                                <option value="1" {% if feed.use_original_images == 1 %} selected="selected" {% endif %}>{{text_enabled}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class=" form-group">
+                        <span class="col-sm-4">{{entry_image_pass}}</span>
+                        <div class="col-sm-8">
+                            <select name="feed[image_pass]" class="form-control" id="image_pass">
+                                <option value="0" {% if feed.image_pass == 0 %} selected="selected" {% endif %}>{{text_image_pass[0]}}</option>
+                                <option value="1" {% if feed.image_pass == 1 %} selected="selected" {% endif %}>{{text_image_pass[1]}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group show_params_image">
+                        <span class="col-sm-4">{{entry_image_width}}</span>
+                        <div class="col-sm-8">
+                            <input name="feed[image_width]" class="form-control"
+                                   value="{{feed.image_width}}">
+                        </div>
+                    </div>
+                    <div class="form-group show_params_image">
+                        <span class="col-sm-4">{{entry_image_height}}</span>
+                        <div class="col-sm-8">
+                            <input name="feed[image_height]" class="form-control"
+                                   value="{{feed.image_height}}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_pictures_limit}}</span>
+                        <div class="col-sm-8">
+                            <input name="feed[pictures_limit]" class="form-control"
+                                   value="{{feed.pictures_limit}}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_cat_names_separathor}}</span>
+                        <div class="col-sm-8">
+                            <input name="feed[cat_names_separathor]" class="form-control"
+                                   value="{{feed.cat_names_separathor}}">
+                        </div>
+                    </div>
+                    <div class=" form-group">
+                        <span class="col-sm-4">{{entry_product_markup_type}}</span>
+                        <div class="col-sm-8">
+                            <select name="feed[product_markup_type]" class="form-control" id="product_markup_type">
+                                <option value="0" {% if feed.product_markup_type == 0 %} selected="selected" {% endif %}>{{text_product_markup_type[0]}}</option>
+                                <option value="1" {% if feed.product_markup_type == 1 %} selected="selected" {% endif %}>{{text_product_markup_type[1]}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_product_markup}}</span>
+                        <div class="col-sm-8">
+                            <input name="feed[product_markup]" class="form-control"
+                                   value="{{feed.product_markup}}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_product_markup_option}}</span>
+                        <div class="col-sm-8">
+                            <input name="feed[product_markup_option]" class="form-control"
+                                   value="{{feed.product_markup_option}}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4">{{entry_replace}}</label>
+                        <div class="col-sm-8">
+                            <select id="active" name="feed[replace_break]" class="form-control">
+                                <option value="0" {% if feed.replace_break == 0 %}selected="selected" {% endif %}>{{text_disabled}}</option>
+                                <option value="1" {% if feed.replace_break == 1 %}selected="selected" {% endif %}>{{text_enabled}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4">{{entry_exclude_empty_product}}</label>
+                        <div class="col-sm-8">
+                            <select id="active" name="feed[exclude_empty_product]" class="form-control">
+                                <option value="0" {% if feed.exclude_empty_product == 0 %}selected="selected" {% endif %}>{{text_disabled}}</option>
+                                <option value="1" {% if feed.exclude_empty_product == 1 %}selected="selected" {% endif %}>{{text_enabled}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_sql_code}}</span>
+                        <div class="col-sm-8">
+                        <textarea id="sql_code" rows="3" style="width:100%" name="feed[sql_code]"
+                                  class="form-control">{{feed.sql_code}}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <span class="col-sm-4">{{entry_sql_code_before}}</span>
+                        <div class="col-sm-8">
+                        <textarea id="sql_code_before" rows="3" style="width:100%" name="feed[sql_code_before]"
+                                  class="form-control">{{feed.sql_code_before}}</textarea>
+                        </div>
+                    </div>
+                    <input type="hidden"
+                           name="{% if feed.product_feed_id is defined and feed.product_feed_id is not empty %} feed[product_feed_id] {% endif %}"
+                           value="{% if feed.product_feed_id is defined and feed.product_feed_id is not empty %} {{feed.product_feed_id}} {% endif %}"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript"><!--
+	$(".text_select_all").on("click", function (e) {
+		$(this).parent().find(":checkbox").prop("checked", true);
+	});
+	$(".text_unselect_all").on("click", function (e) {
+		$(this).parent().find(":checkbox").prop("checked", false);
+	});
+
+	$(".date").datetimepicker({
+		pickTime: false
+	});
+	$("input[name*=feed_name]").blur(function () {
+		var value = convertCyr($(this).val());
+		$("input[name='feed[feed_shortname]']").val(value);
+	});
+	var rus = "щ   ш  ч  ц  ю  я  ё  ж  ъ  ы  э  а б в г д е з и й к л м н о п р с т у ф х ь".split(/ +/g);
+	var eng = "shh sh ch cz yu ya yo zh _ y e a b v g d e z i j k l m n o p r s t u f x _".split(/ +/g);
+
+	function convertCyr(text) {
+		var x;
+		text = text.toLowerCase();
+		for (x = 0; x < rus.length; x++) {
+			text = text.split(rus[x]).join(eng[x]);
+		}
+
+		text = text.replace(/[^a-z0-9_\.\s]/g, "");
+		text = text.replace(/\./g, "_");
+		text = text.replace(/\s/g, "_");
+		return text;
+	}
+
+	$(function () {
+		showCategories($("#use_categories").val());
+		showParamsImage($("#use_original_images").val());
+	});
+
+	$("#use_categories").change(function () {
+		$("[id^=list_categories_]").find(":checkbox").prop("checked", false);
+		showCategories($(this).val());
+	});
+
+	$("#use_original_images").change(function() {
+		showParamsImage($(this).val());
+	})
+	;
+
+	function showCategories(value) {
+		$("[id^=list_categories_]").hide();
+		if (value != 0) {
+			$("#list_categories_" + value).show();
+		} else {
+			$("#list_categories_default").show();
+		}
+	}
+
+	function showParamsImage(value) {
+		if (value != 0) {
+			$(".show_params_image").hide();
+		} else {
+			$(".show_params_image").show();
+		}
+	}
+
+	/* NeoSeo Exchange1c - begin */
+	$('#use_warehouse_quantity').change(function () {
+		showWarehouses($(this).val());
+	});
+
+	$(function () {
+		showWarehouses($('#use_warehouse_quantity').val());
+	});
+
+	function showWarehouses(value) {
+		if (value == 0) {
+			$('.show_warehouses').hide();
+		} else {
+			$('.show_warehouses').show();
+		}
+	}
+	/* NeoSeo Exchange1c - end */
+
+	// Not Unload
+	$('input[name=\'not_unload\']').autocomplete({
+		'source': function(request, response) {
+			$.ajax({
+				url: 'index.php?route=catalog/product/autocomplete&user_token={{ token }}&filter_name=' +  encodeURIComponent(request),
+				dataType: 'json',
+				success: function(json) {
+					response($.map(json, function(item) {
+						return {
+							label: item['name'],
+							value: item['product_id']
+						}
+					}));
+				}
+			});
+		},
+		'select': function(item) {
+			$('input[name=\'not_unload\']').val('');
+
+			$('#product-not-unload-' + item['value']).remove();
+
+			$('#product-not-unload').append('<div id="product-not-unload-' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="feed[product_not_unload][]" value="' + item['value'] + '" /></div>');
+		}
+	});
+
+	$('#product-not-unload').delegate('.fa-minus-circle', 'click', function() {
+		$(this).parent().remove();
+	});
+
+	// Products
+	$('input[name=\'product\']').autocomplete({
+		'source': function(request, response) {
+			$.ajax({
+				url: 'index.php?route=catalog/product/autocomplete&user_token={{ token }}&filter_name=' +  encodeURIComponent(request),
+				dataType: 'json',
+				success: function(json) {
+					response($.map(json, function(item) {
+						return {
+							label: item['name'],
+							value: item['product_id']
+						}
+					}));
+				}
+			});
+		},
+		'select': function(item) {
+			$('input[name=\'product\']').val('');
+
+			$('#product-list-' + item['value']).remove();
+
+			$('#product-list').append('<div id="product-list-' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="feed[product_list][]" value="' + item['value'] + '" /></div>');
+		}
+	});
+
+	$('#product-list').delegate('.fa-minus-circle', 'click', function() {
+		$(this).parent().remove();
+	});
+	//--></script>
+{{footer}}

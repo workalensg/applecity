@@ -1,0 +1,25 @@
+# Config and Htaccess Files
+
+/.htaccess
+/config.php
+/php.ini
+/admin/config.php
+/robots.txt
+/vhost-opencart.conf
+/log
+/error_log
+
+# Image File
+!/image/no_image.jpg
+
+
+# Templates Files
+/image/templates/*
+!/image/templates/default.jpg
+
+# Download Files
+
+# IDE Project files
+/.idea
+/upload/.idea
+/install/*

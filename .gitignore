@@ -1,0 +1,40 @@
+# Config and Htaccess Files
+
+/.htaccess
+/.htaccess.txt
+/.htaccess_oct
+/admineru9s89as8j9aj8d898sa89dsa89d.php
+/changemail.txt.txt
+/config.old.php
+/config.php
+/config-dist.php
+/i.php
+/index.html
+/php.ini
+/robots.txt
+/vhost-opencart.conf
+
+
+/log
+/error_log
+
+/admin/config.php
+/admin/config.old.php
+/admin/config-dist.php
+
+
+
+# Image File
+!/image/no_image.jpg
+
+
+# Templates Files
+/image/templates/*
+!/image/templates/default.jpg
+
+# Download Files
+
+# IDE Project files
+/.idea
+/upload/.idea
+/install/*

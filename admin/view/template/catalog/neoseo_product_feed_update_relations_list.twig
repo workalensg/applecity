@@ -1,0 +1,268 @@
+{{header}}{{column_left}}
+    <div id="content">
+        <div class="page-header">
+            <div class="container-fluid">
+                <img width="36" height="36" style="float:left" src="view/image/neoseo.png" alt=""/>
+                <h1>{{heading_title ~ " " ~ text_module_version  ~ " " ~ heading_title_raw}}</h1>
+                <ul class="breadcrumb">
+                    {% for breadcrumb in breadcrumbs %}
+                        <li><a href="{{breadcrumb.href}}">{{breadcrumb.text}}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="container-fluid">
+            {% if error_warning %}
+                <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{error_warning}}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+            {% endif %}
+            {% if success %}
+                <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{success}}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+            {% endif %}
+            <div class="panel panel-default">
+                <div class="panel-heading" style="height: 56px;">
+                    <h3 class="panel-title"><i class="fa fa-list"></i> {{text_list}}</h3>
+                    <div class="form-group pull-right" style="padding-top: 0px;">
+                        <div class="col-sm-2">
+                            <label class="control-label" for="input-feed-name" style="padding-top: 10px;">{{entry_feed}}</label> </div>
+                        <div class="col-sm-10">
+                            <select name="product_feed_id" style='width: 350px' class="form-control">
+                                {% for feed_id, feed in listFeeds %}
+                                    <option value="{{feed_id}}" {% if activeFeed.product_feed_id == feed_id %}selected="selected" {% endif %}>{{feed.feed_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                {% if listFeeds|length >0 %}
+                <div class="panel-body">
+                    <div class='well'>
+                        <div class="row text-right">
+                            <div class="col-sm-7">
+                                <div class="form-group">
+                                    <label class="control-label"> {{entry_update_all}}</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-5" style="padding-left: 50px;">
+                                <div class="form-group">
+                                    <select name="all_feed_category_id" id="input-status" style='width: 340px' class="form-control">
+                                        <option value="0">{{text_none}}</option>
+                                        {% for category in feedCategories %}
+                                            <option value="{{category.category_id}}" >{{category.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="well">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label" for="input-name">{{entry_name}}</label>
+                                    <input type="text" name="filter_name" value="{{filter_name}}" placeholder="{{entry_name}}" id="input-name" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label" for="input-price">{{entry_price}}</label>
+                                    <input type="text" name="filter_price" value="{{filter_price}}" placeholder="{{entry_price}}" id="input-price" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label" for="input-status">{{column_category}}</label>
+                                    <select name="filter_category" id="input-status" class="form-control">
+                                        <option value="*"></option>
+                                        {% for category in categories %}
+                                            {% if category.category_id == filter_category %}
+                                                <option value="{{category.category_id}}" selected="selected">{{category.name}}&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                                            {% else %}
+                                                <option value="{{category.category_id}}">&nbsp;&nbsp;{{category.name}}&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="button" id="button-filter" class="btn btn-primary pull-right"><i class="fa fa-search"></i> {{button_filter}}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form action="{{action}}" method="post" enctype="multipart/form-data" id="form-product">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <td style="width: 1px;" class="text-center"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" /></td>
+                                    <td class="text-center">{{column_image}}</td>
+                                    <td class="text-left">
+                                        {% if sort == "pd.name" %}
+                                            <a href="{{sort_name}}" class="{{ order|lower }}">{{column_name}}</a>
+                                        {% else %}
+                                            <a href="{{sort_name}}">{{column_name}}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-right">
+                                        {% if sort == "p.price" %}
+                                            <a href="{{sort_price}}" class="{{ order|lower }}">{{column_price}}</a>
+                                        {% else %}
+                                            <a href="{{sort_price}}">{{column_price}}</a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">{{column_category}}</td>
+                                    <td class="center">
+                                        {{column_feed_category ~ ' '~ activeFeed.feed_name}}
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% if products %}
+                                {% for product in products %}
+                                        <tr>
+                                            <td class="text-center">
+                                            {% if product.product_id in selected %}
+                                                    <input type="checkbox" name="selected[]" value="{{product.product_id}}" checked="checked" />
+                                            {% else %}
+                                                    <input type="checkbox" name="selected[]" value="{{product.product_id}}" />
+                                            {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                            {% if product.image %}
+                                                <img src="{{product.image}}" alt="{{product.name}}" class="img-thumbnail" />
+                                            {% else %}
+                                                    <span class="img-thumbnail list"><i class="fa fa-camera fa-2x"></i></span>
+                                            {% endif %}
+                                            </td>
+                                            <td class="text-left">{{product.name}}</td>
+                                            <td class="text-right">{{product.price}}</td>
+                                            <td class="text-center">
+                                                {% for category in categories %}
+                                                    {% if category.category_id in product.category %}
+                                                        {{category.name}}<br>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </td>
+                                            <td class="text-center">
+                                                <select name="feed_category_id" style="width: 350px;" onchange="updateProductToFeedCategory($(this).val(), {{product.product_id}} )" class="form-control">
+                                                    <option value="0">{{text_none}}</option>
+                                                    {% for category in feedCategories %}
+                                                        <option value="{{category.category_id}}" {% if product.feed_category_id == category.category_id %} selected="selected" {% endif %}>{{category.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td class="text-center" colspan="6">{{text_no_results}}</td>
+                                    </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                    <div class="row">
+                        <div class="col-sm-6 text-left">{{pagination}}</div>
+                        <div class="col-sm-6 text-right">{{results}}</div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="panel-body">
+                    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{error_empty_feed}}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% if listFeeds|length >0 %}
+            <script type="text/javascript"><!--
+                $('#button-filter').on('click', function() {
+                    var url = 'index.php?route=catalog/neoseo_product_feed_update_relations&user_token={{user_token}}';
+                    var filter_name = $('input[name=\'filter_name\']').val();
+                    if (filter_name) {
+                        url += '&filter_name=' + encodeURIComponent(filter_name);
+                    }
+
+                    var filter_price = $('input[name=\'filter_price\']').val();
+                    if (filter_price) {
+                        url += '&filter_price=' + encodeURIComponent(filter_price);
+                    }
+
+                    var filter_category = $('select[name=\'filter_category\']').val();
+                    if (filter_category != '*') {
+                        url += '&filter_category=' + encodeURIComponent(filter_category);
+                    }
+                    url += '&feed_id=' + encodeURIComponent($('select[name=\product_feed_id\]').val());
+       
+                    location = url;
+                });
+//--></script>
+            <script type="text/javascript"><!--
+                $('input[name=\'filter_name\']').autocomplete({
+                    'source': function(request, response) {
+                        $.ajax({
+                            url: 'index.php?route=catalog/product/autocomplete&user_token={{user_token}}&filter_name=' + encodeURIComponent(request),
+                            dataType: 'json',
+                            success: function(json) {
+                                response($.map(json, function(item) {
+                                    return {
+                                        label: item.name,
+                                        value: item.product_id
+                                    }
+                                }));
+                            }
+                        });
+                    },
+                    'select': function(item) {
+                        $('input[name=\'filter_name\']').val(item.label);
+                    }
+                });
+//--></script>
+            <script>
+                $('select[name=\product_feed_id\]').bind("change", function() {
+                    var form_attr = $('#form-product').attr('action');
+                    $('#form-product').attr('action',form_attr+'&feed_id='+$(this).val());
+                    $('#form-product').submit();
+                });
+                $('select[name=\all_feed_category_id\]').bind("change", function() {
+                    var products_id = [];
+                    $("input[name^='selected']").each(function() {
+                        if ($(this).is(':checked')) {
+                            products_id.push($(this).val());
+                        }
+                    });
+                    updateProductToFeedCategory($(this).val(), products_id)
+                });
+
+                function updateProductToFeedCategory(category_id, product_id) {
+                    $.ajax({
+                        url: 'index.php?route=catalog/neoseo_product_feed_update_relations/updateProductToFeedCategory&user_token={{user_token}}',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            'category_id': category_id,
+                            'feed_id': {{activeFeed.product_feed_id}},
+                            'products_id': product_id
+                        },
+                        success: function(json) {
+                            $('.alert').remove();
+                            if (json.error) {
+                                $('#content > .container-fluid').prepend('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json.error + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+                            }
+
+                            if (json.success) {
+                                location.reload();
+                            }
+                        },
+                        error: function(xhr, ajaxOptions, thrownError) {
+                            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                        }
+                    });
+                }
+            </script>
+        {% endif %}
+    </div>
+{{footer}}

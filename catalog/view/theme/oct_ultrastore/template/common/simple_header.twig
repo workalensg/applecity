@@ -1,0 +1,33 @@
+{{ header }}
+<div class="container">
+  <!-- Хлебные крошки, Заголовок страницы и warning -->
+  <nav aria-label="breadcrumb">
+	<ul class="breadcrumb us-breadcrumb">
+	    {% for breadcrumb in breadcrumbs %}
+	    <li class="breadcrumb-item us-breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+	    {% endfor %}
+	</ul>
+  </nav>
+  <div class="row">
+	<div class="col-lg-12">
+		<h1 class="us-main-shop-title">{{ heading_title }}</h1>
+	</div>
+  </div>
+  <div class="content-top-box">{{ content_top }}</div>
+  {% if error_warning %}
+  <script>
+	usNotify('warning', '{{ error_warning }}');
+  </script>
+  {% endif %}
+  <!-- /Хлебные крошки, Заголовок страницы и warning -->
+  <div class="row">{{ column_left }}
+    {% if column_left and column_right %}
+    {% set class = 'col-sm-6' %}
+    {% elseif column_left or column_right %}
+    {% set class = 'col-sm-9' %}
+    {% else %}
+    {% set class = 'col-sm-12' %}
+    {% endif %}
+    <div id="content" class="{{ class }}">
+      
+      

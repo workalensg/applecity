@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<code>oct_categories_quantity</code>
+	<name>Octemplates - Categories Quantity</name>
+	<version>1.0.0</version>
+	<author>Octemplates</author>
+	<link>https://octemplates.net/</link>
+	<file path="catalog/view/theme/oct_ultrastore/template/product/{category,manufacturer_info,search,special}.twig">
+		<operation error="skip">
+			<search><![CDATA[<button onclick="cart.add('{{ product.product_id }}');" class="us-module-cart-btn button-cart">{{ button_cart }}</button>]]></search>
+			<add position="replace"><![CDATA[
+			{% if oct_ultrastore_data.category_view_quantity is defined and oct_ultrastore_data.category_view_quantity and product.can_buy is not empty %}
+				<div class="us-product-category-quantity mt-auto">
+					<div class="btn-group us-product-quantity" role="group">
+						<button type="button" class="us-product-quantity-btn us-minus">-</button>
+						<input type="text" class="form-control" name="quantity" value="{{ product.minimum }}" />
+						<button type="button" class="us-product-quantity-btn us-plus">+</button>
+						<input type="hidden" name="product_id" value="{{ product.product_id }}" />
+						<input class="min-qty" type="hidden" value="{{ product.minimum }}" name="min_quantity">
+					</div>
+					<button class="us-module-cart-btn button-cart us-cat-button-cart">{{ button_cart }}</button>
+				</div>
+			{% else %}
+				<button onclick="cart.add('{{ product.product_id }}');" class="us-module-cart-btn button-cart">{{ button_cart }}</button>
+			{% endif %}
+			]]></add>
+    	</operation>
+	</file>
+</modification>

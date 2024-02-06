@@ -1,0 +1,63 @@
+<div class="pull-right">
+    <div class="row" style="margin-right: 1px;">
+    <form id="neoseo_payment_paypart_privat_pb_checkout" role="form" class="form-inline">  
+      <div class="form-group">
+        <label for="partsCount_pb" style="float:left;padding: 6px 12px 2px 12px;"><?php echo $text_label_partsCount; ?></label>
+        <select id="partsCount_pb" name="partsCount_pb" style="width:auto;" class="form-control selectWidth">
+          {% for partsCount in  partsCounts %}
+              <option>{{  partsCount }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="btn-group">
+          <input type="submit" value="{{ button_confirm }}" class="btn btn-primary" />
+      </div>
+      </form>
+    </div>
+</div> 
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+    $("#neoseo_payment_paypart_privat_pb_checkout").submit(function(){
+        var error = false;
+        partsCounArr = {partsCount: $('#partsCount_pb').val()};        
+        
+        $.ajax({
+            type: 'POST',
+            url: '{{ action }}',
+            dataType: 'json',
+            data: partsCounArr,
+               success: function(data){ // сoбытиe пoслe удaчнoгo oбрaщeния к сeрвeру и пoлучeния oтвeтa
+               console.log(data['state']);
+                    switch(data['state']){
+                        case 'SUCCESS':
+                            window.location = 'https://payparts2.privatbank.ua/ipp/v2/payment?token='+data['token'];
+                            break;
+                        case 'FAIL':
+                            $('#collapse-checkout-confirm .panel-body').prepend('<div class="alert alert-warning">' + data['message'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+                          break;
+                        case 'sys_error':
+                            $('#collapse-checkout-confirm .panel-body').prepend('<div class="alert alert-warning">' + data['message'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');                                          
+                          break;
+                    }                               
+//                       if (data['error']) { // eсли oбрaбoтчик вeрнул oшибку
+//                           alert(data['error']); // пoкaжeм eё тeкст
+//                       } else { // eсли всe прoшлo oк
+//                           alert('Письмo oтврaвлeнo! Чeкaйтe пoчту! =)'); // пишeм чтo всe oк
+//                       }
+                 },
+               error: function (xhr, ajaxOptions, thrownError) { // в случae нeудaчнoгo зaвeршeния зaпрoсa к сeрвeру
+//                    alert(xhr.status); // пoкaжeм oтвeт сeрвeрa
+//                    alert(thrownError); // и тeкст oшибки
+                 }
+//               complete: function(data) { // сoбытиe пoслe любoгo исхoдa
+//                    form.find('input[type="submit"]').prop('disabled', false); // в любoм случae включим кнoпку oбрaтнo
+//                 }            
+        });
+        
+        return false;    
+    });    
+});    
+
+</script>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<code>oct_ultrastore_ocfilter</code>
+	<name>Octemplates - For OCFilter UltraStore Theme</name>
+	<version>1.0.0</version>
+	<author>Octemplates</author>
+	<link>https://octemplates.net/</link>
+	<file path="catalog/controller/product/category.php">
+		<operation error="skip">
+			<search><![CDATA[if ($category_info['image']) {]]></search>
+			<add position="before"><![CDATA[
+			$data['ocfilter_on'] = $this->config->get('module_ocfilter_status') ? 1 : 0;
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/view/theme/oct_ultrastore/template/product/category.twig">
+		<operation error="skip">
+			<search><![CDATA[<div class="us-category-content">]]></search>
+			<add position="after"><![CDATA[
+			{% if ocfilter_on %}
+			<div class="static_button_ocfilter"><div class="ocfilter-mobile-handle"><button type="button" class="us-module-btn us-module-btn-green" data-toggle="offcanvas"><i class="fa fa-filter"></i> {{ oc_filter_button_text }}</button></div></div>
+			{% endif %}
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/view/theme/*/template/extension/module/ocfilter/module.twig">
+		<operation error="skip">
+			<search><![CDATA[{% endif %}]]></search>
+			<add position="replace"><![CDATA[
+			{% else %}
+			<script>
+			$(function() {
+				$('.static_button_ocfilter').addClass('d-none');
+				
+			});
+			</script>
+			{% endif %}
+			]]></add>
+    	</operation>
+		<operation error="skip">
+			<search><![CDATA[<div class="ocf-offcanvas ocfilter-mobile hidden-sm hidden-md hidden-lg">]]></search>
+			<add position="replace"><![CDATA[
+			<div class="ocf-offcanvas ocfilter-mobile d-lg-none">
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[<button type="button" class="btn btn-primary" data-toggle="offcanvas"><i class="fa fa-filter"></i></button>]]></search>
+			<add position="replace"><![CDATA[
+			<button type="button" class="us-module-btn us-module-btn-green" data-toggle="offcanvas"><i class="fa fa-filter"></i></button>
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[<div class="hidden" id="ocfilter-button">]]></search>
+			<add position="replace"><![CDATA[
+			<div class="d-none" id="ocfilter-button">
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$('[data-toggle="offcanvas"]').on('click', function(e) {]]></search>
+			<add position="after"><![CDATA[
+				$('#us_overlay').addClass('active');
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/view/theme/*/template/extension/module/ocfilter/value_item.twig">
+		<operation error="skip">
+			<search><![CDATA[{{ value.name }}]]></search>
+			<add position="replace"><![CDATA[
+			<span>{{ value.name }}</span>
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/view/theme/*/template/extension/module/ocfilter/selected_filter.twig">
+		<operation error="skip">
+			<search><![CDATA[<button type="button" onclick="location = '{{ value.href }}';" class="btn btn-xs btn-danger" style="padding: 1px 4px;"><i class="fa fa-times"></i> {{ value.name }}</button>]]></search>
+			<add position="replace"><![CDATA[
+			<button type="button" onclick="location = '{{ value.href }}';" class="btn btn-sm btn-danger" style="padding: 1px 4px;"><i class="fa fa-times"></i> {{ value.name }}</button>
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/language/ru-ru/extension/module/ocfilter.php">
+		<operation error="skip">
+			<search><![CDATA[$_['heading_title']                   = 'Параметры';]]></search>
+			<add position="replace"><![CDATA[
+			$_['heading_title']                   = 'Фильтр товаров';
+			]]></add>
+    	</operation>
+	</file>	
+	<file path="catalog/language/uk-ua/extension/module/ocfilter.php">
+		<operation error="skip">
+			<search><![CDATA[$_['heading_title']                   = 'Параметри';]]></search>
+			<add position="replace"><![CDATA[
+			$_['heading_title']                   = 'Фільтр товарів';
+			]]></add>
+    	</operation>
+	</file>
+</modification>

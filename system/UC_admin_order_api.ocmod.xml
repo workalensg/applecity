@@ -1,0 +1,151 @@
+<modification>
+    <name>Укркредит управление заказами</name>
+	<version>1.1.0</version>
+	<link>https://fringe.com.ua</link>
+	<author>Stealth</author>
+	<code>ukrcredit_admin_order_api_ocmod</code>
+
+	<file path="admin/model/sale/order.php">
+		<operation>
+			<search><![CDATA[$order_product_query =]]></search>
+			<add position="before"><![CDATA[
+			$order_ukrcredits_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_ukrcredits WHERE order_id = '" . (int)$order_id . "'");
+			
+			if ($order_ukrcredits_query->num_rows) {
+				$ukrcredits_order_id = $order_ukrcredits_query->row['ukrcredits_order_id'];
+				$ukrcredits_order_status = $order_ukrcredits_query->row['ukrcredits_order_status'];
+				$ukrcredits_order_substatus = $order_ukrcredits_query->row['ukrcredits_order_substatus'];
+			} else {
+				$ukrcredits_order_id = '';
+				$ukrcredits_order_status = '';
+				$ukrcredits_order_substatus = '';
+			}
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$order_query->row['payment_code'],]]></search>
+			<add position="after"><![CDATA[
+				'ukrcredits_order_id'         => $ukrcredits_order_id,
+				'ukrcredits_order_status'     => $ukrcredits_order_status,
+				'ukrcredits_order_substatus'  => $ukrcredits_order_substatus,
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$this->db->query("DELETE FROM `" . DB_PREFIX . "order]]></search>
+			<add position="before"><![CDATA[
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "order_ukrcredits` WHERE order_id = '" . (int)$order_id . "'");
+			]]></add>
+		</operation>
+	</file>	
+	<file path="admin/controller/sale/order.php">
+		<operation>
+			<search><![CDATA[$data['comment'] = nl2br($order_info['comment']);]]></search>
+			<add position="before"><![CDATA[
+			$data['text_confirm'] = $this->language->get('text_confirm');
+			$data['text_wait'] = $this->language->get('text_loading');
+			$data['text_sum'] = $this->language->get('text_sum');
+			$data['button_refresh'] = $this->language->get('button_refresh');
+			$data['button_confirm'] = $this->language->get('button_confirm');
+			$data['button_return'] = $this->language->get('button_return');
+			$data['ukrcredits_order_substatus'] = $order_info['ukrcredits_order_substatus']; 
+			$data['ukrcredits_order_status'] = $order_info['ukrcredits_order_status']; 
+			$data['ukrcredits_order_id'] = $order_info['ukrcredits_order_id']; 
+			$data['payment_code'] = $order_info['payment_code'];
+			
+			$token = version_compare(VERSION,'3.0','>=') ? 'user_' : '';
+			$data['version20'] = version_compare(VERSION,'2.1','<') ? true : false;
+			$data['token'] = $this->session->data[$token.'token'];
+			$data['text_token'] = $token.'token';
+			]]></add>
+		</operation>
+	</file>	
+	<file path="admin/language/*/*.php">
+		<operation error="skip">
+			<search><![CDATA[$_['text_yes']]]></search>
+			<add position="before"><![CDATA[
+$_['button_confirm']		= 'Подтвердить';
+$_['button_return']			= 'Возврат';
+$_['text_sum']				= 'Сумма возврата';
+
+			]]></add>
+		</operation>
+	</file>
+	<file path="admin/view/template/sale/order_info.tpl">
+		<operation error="skip">
+			<search><![CDATA[<?php echo $payment_method; ?></td>]]></search>
+			<add position="replace"><![CDATA[
+<?php echo $payment_method; ?>
+<?php if ($ukrcredits_order_status) { ?>
+ <br>Статус: <b id="ukrcredits_order_status"><?php echo $ukrcredits_order_status; ?> <?php echo $ukrcredits_order_substatus ? '/ '.$ukrcredits_order_substatus : ''; ?></b>
+ <br>
+ <?php if ($ukrcredits_order_status == 'LOCKED') { ?>
+	<a id="button-confirm" class="btn btn-primary"><?php echo $button_confirm; ?></a> <a id="button-cancel" class="btn btn-primary"><?php echo $button_cancel; ?></a>
+ <?php } ?>
+ <?php if ($ukrcredits_order_status == 'IN_PROCESS' && $ukrcredits_order_substatus == 'WAITING_FOR_STORE_CONFIRM') { ?>
+	<a id="button-confirm-mb" class="btn btn-primary"><?php echo $button_confirm; ?></a> <a id="button-cancel-mb" class="btn btn-primary"><?php echo $button_cancel; ?></a>
+ <?php } ?>
+ <?php if ($payment_code == 'ukrcredits_mb') { ?>
+	<a id="button-status-mb" class="btn btn-primary"><?php echo $button_refresh; ?></a>
+	<div class="input-group date" style="margin-top: 10px;">
+		<input type="text" name="" id="returnsumm" value="" placeholder="<?php echo $text_sum; ?>" class="form-control">
+		<span class="input-group-btn">
+			<a id="button-return-mb" class="btn btn-primary"><?php echo $button_return; ?></a>
+		</span>
+	</div>
+ <?php } else if ($payment_code == 'ukrcredits_ab') { ?>
+		<a id="button-status-ab" class="btn btn-primary"><?php echo $button_refresh; ?></a>
+		<a id="button-confirm-ab" class="btn btn-primary"><?php echo $button_confirm; ?></a> <a id="button-cancel-ab" class="btn btn-primary"><?php echo $button_cancel; ?></a>
+ <?php } else { ?>		
+	<a id="button-status" class="btn btn-primary"><?php echo $button_refresh; ?></a>
+ <?php } ?>
+<?php } ?>
+</td>
+			]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[<?php echo $footer; ?> ]]></search>
+			<add position="before"><![CDATA[
+<?php require_once DIR_APPLICATION . 'view/template/sale/ukrcredits.tpl'; ?>
+			]]></add>
+		</operation>
+	</file>
+	<file path="admin/view/template/sale/order_info.twig">
+		<operation error="skip">
+			<search><![CDATA[{{ payment_method }}</td>]]></search>
+			<add position="replace"><![CDATA[
+{{ payment_method }}
+{% if ukrcredits_order_status %}
+	<br>Статус: <b id="ukrcredits_order_status">{{ ukrcredits_order_status }} {{ ukrcredits_order_substatus ? ('/ '~ukrcredits_order_substatus) : '' }}</b>
+	<br>
+	{% if ukrcredits_order_status == 'LOCKED' %}
+		<a id="button-confirm" class="btn btn-primary">{{ button_confirm }}</a> <a id="button-cancel" class="btn btn-primary">{{ button_cancel }}</a>
+	{% endif %}
+	{% if ukrcredits_order_status == 'IN_PROCESS' and ukrcredits_order_substatus == 'WAITING_FOR_STORE_CONFIRM' %}
+		<a id="button-confirm-mb" class="btn btn-primary">{{ button_confirm }}</a> <a id="button-cancel-mb" class="btn btn-primary">{{ button_cancel }}</a>
+	{% endif %}
+	{% if payment_code == 'ukrcredits_mb' %}
+		<a id="button-status-mb" class="btn btn-primary">{{ button_refresh }}</a>
+		<div class="input-group date" style="margin-top: 10px;">
+			<input type="text" name="" id="returnsumm" value="" placeholder="{{ text_sum }}" class="form-control">
+			<span class="input-group-btn">
+				<a id="button-return-mb" class="btn btn-primary">{{ button_return }}</a>
+			</span>
+		</div>
+	{% elseif payment_code == 'ukrcredits_ab' %}
+		<a id="button-status-ab" class="btn btn-primary">{{ button_refresh }}</a>
+		<a id="button-confirm-ab" class="btn btn-primary">{{ button_confirm }}</a> <a id="button-cancel-ab" class="btn btn-primary">{{ button_cancel }}</a>
+	{% else %}
+		<a id="button-status" class="btn btn-primary">{{ button_refresh }}</a> 
+	{% endif %}
+{% endif %}
+</td>
+			]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[{{ footer }}]]></search>
+			<add position="before"><![CDATA[
+{% include 'sale/ukrcredits.twig' %}
+			]]></add>
+		</operation>
+	</file>	
+</modification>

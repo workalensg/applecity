@@ -1,0 +1,22 @@
+<modification>
+    <name>Укркредит unishop fix</name>
+	<version>1.1.0</version>
+	<link>https://fringe.com.ua</link>
+	<author>Stealth</author>
+	<code>ukrcredit_unishop_fix_ocmod</code>
+	
+	<file path="catalog/controller/checkout/uni_checkout.php">
+		<operation error="skip">
+			<search><![CDATA[$this->document->addStyle]]></search>
+			<add position="before"><![CDATA[
+			$this->document->addScript('catalog/view/javascript/jquery/jquery-ui/jquery-ui.min.js');
+			]]></add>
+		</operation>
+	</file>
+	<file path="catalog/controller/payment/{ukrcredits_ii,ukrcredits_pp,ukrcredits_mb,ukrcredits_ab}.php">
+		<operation error="skip">
+			<search><![CDATA[checkout/checkout]]></search>
+			<add position="replace"><![CDATA[checkout/uni_checkout]]></add>
+		</operation>
+	</file>
+</modification>

@@ -1,0 +1,92 @@
+.social_icons_vt_9{
+	height: 50px;
+}
+@media (min-width: 768px) {
+	.social_icons_vt {
+		position: absolute;
+		right: 5px;
+	}
+}
+.sm-fixed:hover{
+	opacity: 1;
+}
+.sm-fixed{
+	position: fixed;
+    display: block;
+    opacity: 0.8;
+    width: 49px;
+    height: 50px;
+    /*background: url(/catalog/view/theme/default/image/social_icons_vt/open.png);
+    background-size: contain;
+    background-repeat: no-repeat;*/
+	padding: 10px;
+    border-radius: 30px;
+    z-index: 99;
+}
+.openned{
+	background-image: url(/catalog/view/theme/default/image/social_icons_vt/close.png) !important;
+	background-size: contain;
+    background-repeat: no-repeat;
+}
+.openned svg{
+	opacity: 0;
+}
+.social_icons_vt {
+	padding-bottom: 5px;
+    display: none;
+    position: fixed;
+    z-index: 99;
+    width: 56px;
+    background-color: white;
+    padding: 8px;
+    border-radius: 10px;
+}
+.icon_vt {
+    display: inline-block;
+    height: 40px;
+    width: 40px;
+    margin-top: 5px;
+    background-image: url(/catalog/view/theme/default/image/social_icons_vt/sprit-social_vt2.png);
+}
+.facebook_vt {
+	background-position: 0 0;
+}
+.facebook_vt:hover {
+	background-position: 0 -40px;
+}
+.viber {
+	background-position: -40px 0;
+}
+.viber:hover {
+	background-position: -40px -40px;
+}
+.youtube_vt {
+	background-position: -80px 0;
+}
+.youtube_vt:hover {
+	background-position: -80px -40px;
+}
+.instagram_vt {
+	background-position: -120px 0;
+}
+.instagram_vt:hover {
+	background-position: -120px -40px;
+}
+.twitter_vt {
+	background-position: -160px 0;
+}
+.twitter_vt:hover {
+	background-position: -160px -40px;
+}
+.vk_vt {
+	background-position: -200px 0;
+}
+.vk_vt:hover {
+	background-position: -200px -40px;
+}
+.whatsapp {
+	background-position: -240px 0;
+}
+.whatsapp:hover {
+	background-position: -240px -40px;
+}

@@ -1,0 +1,15 @@
+table.form-narrow {
+    width: 60%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table.form-narrow > tbody > tr > td:first-child {
+    width: 200px;
+}
+
+table.form-narrow > tbody > tr > td {
+    padding: 10px;
+    color: #000000;
+    border-bottom: 1px dotted #CCCCCC;
+}

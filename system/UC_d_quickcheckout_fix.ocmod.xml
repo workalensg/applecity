@@ -1,0 +1,20 @@
+<modification>
+    <name>Укркредит d_quickcheckout fix</name>
+	<version>1.0.8</version>
+	<link>https://fringe.com.ua</link>
+	<author>Stealth</author>
+	<code>ukrcredit_d_quickcheckout_fix_ocmod</code>
+	
+
+	<file path="catalog/model/extension/d_quickcheckout/method.php" error="log">
+		<operation error="log">
+			<search><![CDATA[if(file_exists(DIR_APPLICATION . 'model/extension/payment/]]></search>
+			<add position="before"><![CDATA[
+                    if(file_exists(DIR_APPLICATION . 'model/payment/' . $result['code'] . '.php')){
+                        $this->load->model('payment/' . $result['code']);
+                        $method = $this->{'model_payment_' . $result['code']}->getMethod($payment_address, $total);
+                    }
+			]]></add>
+		</operation>
+	</file>
+</modification>

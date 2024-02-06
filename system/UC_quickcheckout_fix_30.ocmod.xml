@@ -1,0 +1,22 @@
+<modification>
+    <name>Укркредит quickcheckout fix</name>
+	<version>1.1.0</version>
+	<link>https://fringe.com.ua</link>
+	<author>Stealth</author>
+	<code>ukrcredit_quickcheckout_fix_ocmod</code>
+	
+	<file path="admin/controller/extension/module/quickcheckout.php" error="skip">
+		<operation error="skip">
+			<search><![CDATA[$files = glob(DIR_APPLICATION . 'controller/extension/payment/*.php');]]></search>
+			<add position="replace"><![CDATA[$files = glob(DIR_APPLICATION . 'controller/{extension/payment,payment}/*.php', GLOB_BRACE);]]></add>
+		</operation>
+	</file>
+	<file path="catalog/view/theme/*/template/extension/quickcheckout/confirm.twig" error="skip">
+		<operation error="skip">
+			<search><![CDATA[{% if not redirect %} ]]></search>
+			<add position="before"><![CDATA[
+			<script src="catalog/view/javascript/jquery/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+			]]></add>
+		</operation>
+	</file>	
+</modification>

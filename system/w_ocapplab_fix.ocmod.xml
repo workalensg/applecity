@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<code>w_ocapplab_fix</code>
+	<name>Octemplates - WebP</name>
+	<version>1.0.0</version>
+	<author>OCappLab</author>
+	<link>https://ocapplab.com/</link>
+	<file path="admin/controller/catalog/product.php">
+    	<operation error="skip">
+			<search><![CDATA[if (isset($this->request->post['price'])) {]]></search>
+			<add position="before"><![CDATA[
+			if (isset($this->request->post['preorder'])) {
+				$data['preorder'] = $this->request->post['preorder'];
+			} elseif (!empty($product_info)) {
+				$data['preorder'] = $product_info['preorder'];
+			} else {
+				$data['preorder'] = 1;
+			}
+			]]></add>
+    	</operation>
+	</file>
+	<file path="admin/model/catalog/product.php">
+    	<operation error="skip">
+			<search><![CDATA[if (isset($data['image'])) {]]></search>
+			<add position="before"><![CDATA[
+			$this->db->query("UPDATE " . DB_PREFIX . "product SET preorder = '" . (int)$data['preorder'] . "' WHERE product_id = '" . (int)$product_id . "'");
+			]]></add>
+    	</operation>
+	</file>
+	<file path="admin/view/template/catalog/product_form.twig">
+    	<operation error="skip">
+			<search><![CDATA[<label class="col-sm-2 control-label" for="input-tax-class">{{ entry_tax_class }}</label>]]></search>
+			<add position="before" offset="1"><![CDATA[
+			<div class="form-group">
+                <label class="col-sm-2 control-label">{{ entry_preorder }}</label>
+                <div class="col-sm-10">
+                  <label class="radio-inline"> {% if preorder %}
+                      <input type="radio" name="preorder" value="1" checked="checked"/>
+                      {{ text_yes }}
+                    {% else %}
+                      <input type="radio" name="preorder" value="1"/>
+                      {{ text_yes }}
+                    {% endif %} </label> <label class="radio-inline"> {% if not preorder %}
+                      <input type="radio" name="preorder" value="0" checked="checked" />
+                      {{ text_no }}
+                    {% else %}
+                      <input type="radio" name="preorder" value="0" />
+                      {{ text_no }}
+                    {% endif %} </label>
+                </div>
+            </div>
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/controller/product/product.php">
+    	<operation error="skip">
+			<search><![CDATA[$data['stock'] = $this->language->get('text_instock');]]></search>
+			<add position="replace"><![CDATA[
+			if ($product_info['preorder']) {
+				$data['stock'] = $this->language->get('text_preorder');
+				$data['preorder'] = true;
+			} else {
+				$data['stock'] = $this->language->get('text_instock');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {]]></search>
+			<add position="before"><![CDATA[
+			$data['price_to'] = $this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax'));
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$data['price'] = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$data['price_to_in'] = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'USD');
+			} else {
+				$data['price_to_in'] = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'UAH');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$data['special'] = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$data['special_to_in'] = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'USD');
+			} else {
+				$data['special_to_in'] = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'UAH');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$special = false;]]></search>
+			<add position="after"><![CDATA[
+			$special_to_in = false;
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/model/catalog/product.php">
+    	<operation error="skip">
+			<search><![CDATA['location'         => $query->row['location'],]]></search>
+			<add position="before"><![CDATA[
+			'preorder'         => $query->row['preorder'],
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/view/theme/oct_ultrastore/template/product/product.twig">
+    	<operation error="skip">
+			<search><![CDATA[{% if price %}]]></search>
+			<add position="after"><![CDATA[
+			{% if preorder is defined and preorder %}
+				<div class="us-price-block us-price-block-not-special d-flex align-items-center">
+					<div class="us-price-actual">{{ stock }}</div>
+				</div>
+			{% else %}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[{% if oct_popup_found_cheaper_status is defined and oct_popup_found_cheaper_status == 'on' %}]]></search>
+			<add position="before"><![CDATA[
+			{% if price_to_in is defined and price_to_in %}
+				{% if not special_to_in %}
+				<div class="us-price-actual2">{{ price_to_in }}</div>
+				{% else %}
+				<div class="us-price-new2">{{ special_to_in }}</div>
+				<div class="us-price-old2">{{ price_to_in }}</div>
+				{% endif %}
+			{% endif %}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[{% if oct_popup_found_cheaper_status is defined and oct_popup_found_cheaper_status == 'on' %}]]></search>
+			<add position="replace" offset="2"><![CDATA[
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search index="0"><![CDATA[{% if tax %}]]></search>
+			<add position="before"><![CDATA[
+			{% if oct_popup_found_cheaper_status is defined and oct_popup_found_cheaper_status == 'on' %}
+			<div class="ocapp-price us-price-block{% if not special_to_in %} us-price-block-not-special{% endif %} d-flex align-items-center">
+				<a href="javascript:;" class="us-product-link oct-popup-found-cheaper-link" onclick="octPopupFoundCheaper('{{ product_id }}')">{{ oct_product_cheaper }}</a>
+			</div>
+			{% endif %}
+			{% endif %}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[<button type="button" id="button-cart" data-loading-text="{{ text_loading }}" class="us-product-btn us-product-btn-active">{{ button_cart }}</button>]]></search>
+			<add position="replace"><![CDATA[
+			{% if preorder is defined and preorder %}
+			<button type="button" id="button-cart" data-loading-text="{{ text_loading }}" class="us-product-btn us-product-btn-active">{{ stock }}</button>
+			{% else %}
+			<button type="button" id="button-cart" data-loading-text="{{ text_loading }}" class="us-product-btn us-product-btn-active">{{ button_cart }}</button>
+			{% endif %}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[{{ footer }}]]></search>
+			<add position="before"><![CDATA[
+			<script>
+			  gtag('event', 'page_view', {
+			    'send_to': 'AW-360376608',
+			    'value': '{{ price_to }}',
+			    'items': [{
+			      'id': '{{ product_id }}',
+			      'google_business_vertical': 'retail'
+			    }]
+			  });
+			</script>
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/controller/octemplates/module/oct_popup_view.php">
+    	<operation error="skip">
+			<search><![CDATA[$data['product_name'] = $product_info['name'];]]></search>
+			<add position="after"><![CDATA[
+			if ($product_info['preorder']) {
+				$data['stock'] = $this->language->get('text_preorder');
+				$data['preorder'] = true;
+			} else {
+				$data['stock'] = $this->language->get('text_instock');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$data['price'] = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$data['price_to_in'] = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'USD');
+			} else {
+				$data['price_to_in'] = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'UAH');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$data['special'] = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$data['special_to_in'] = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'USD');
+			} else {
+				$data['special_to_in'] = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'UAH');
+			}
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/view/theme/oct_ultrastore/template/octemplates/module/oct_popup_view.twig">
+    	<operation error="skip">
+			<search><![CDATA[{% if price %}]]></search>
+			<add position="after"><![CDATA[
+			{% if preorder is defined and preorder %}
+				<div class="us-price-block us-price-block-not-special d-flex align-items-center">
+					<div class="us-price-actual">{{ stock }}</div>
+				</div>
+			{% else %}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search index="0"><![CDATA[{% if tax %}]]></search>
+			<add position="before"><![CDATA[
+			{% if price_to_in is defined and price_to_in %}
+			<div class="ocapp-price us-price-block{% if not special_to_in %} us-price-block-not-special{% endif %} d-flex align-items-center">
+				{% if not special_to_in %}
+				<div class="us-price-actual2">{{ price_to_in }}</div>
+				{% else %}
+				<div class="us-price-new2">{{ special_to_in }}</div>
+				<div class="us-price-old2">{{ price_to_in }}</div>
+				{% endif %}
+			</div>
+			{% endif %}
+			{% endif %}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[<button type="button" id="oct-popup-button-cart" data-loading-text="{{ text_loading }}" class="us-product-btn us-product-btn-active">{{ button_cart }}</button>]]></search>
+			<add position="replace"><![CDATA[
+			{% if preorder is defined and preorder %}
+			<button type="button" id="oct-popup-button-cart" data-loading-text="{{ text_loading }}" class="us-product-btn us-product-btn-active">{{ stock }}</button>
+			{% else %}
+			<button type="button" id="oct-popup-button-cart" data-loading-text="{{ text_loading }}" class="us-product-btn us-product-btn-active">{{ button_cart }}</button>
+			{% endif %}
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/controller/extension/module/{bestseller,special,latest}.php|catalog/controller/product/{category,manufacturer,search,special,product}.php">
+    	<operation error="skip">
+			<search><![CDATA[$data['products'][] = array(]]></search>
+			<add position="before"><![CDATA[
+			if ($result['preorder']) {
+				$data['stock'] = $this->language->get('text_preorder');
+				$preorder = true;
+			} else {
+				$preorder = false;
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$price_to_in = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')), 'USD');
+			} else {
+				$price_to_in = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')), 'UAH');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$special_to_in = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')), 'USD');
+			} else {
+				$special_to_in = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')), 'UAH');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA['thumb'       => $image,]]></search>
+			<add position="before"><![CDATA[
+			'preorder'       => $preorder,
+			'price_to_in'    => isset($price_to_in) ? $price_to_in : false,
+			'special_to_in'  => isset($special_to_in) ? $special_to_in : false,
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/controller/extension/module/featured.php|catalog/controller/extension/module/{oct_products_from_category,oct_product_views}.php">
+    	<operation error="skip">
+			<search><![CDATA[$data['products'][] = array(]]></search>
+			<add position="before"><![CDATA[
+			if ($product_info['preorder']) {
+				$data['stock'] = $this->language->get('text_preorder');
+				$preorder = true;
+			} else {
+				$preorder = false;
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$price = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$price_to_in = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'USD');
+			} else {
+				$price_to_in = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'UAH');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$special = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$special_to_in = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'USD');
+			} else {
+				$special_to_in = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'UAH');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA['thumb'       => $image,]]></search>
+			<add position="before"><![CDATA[
+			'preorder'       => $preorder,
+			'price_to_in'    => isset($price_to_in) ? $price_to_in : false,
+			'special_to_in'  => isset($special_to_in) ? $special_to_in : false,
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/view/theme/oct_ultrastore/template/product/{category,manufacturer_info,search,special}.twig">
+    	<operation error="skip">
+			<search><![CDATA[{% if product.price %}]]></search>
+			<add position="replace" offset="11"><![CDATA[
+			{% if product.preorder is defined and product.preorder %}
+				<div class="us-module-price">
+					<span class="us-module-price-actual">{{ stock }}</span>
+				</div>
+			{% else %}
+				{% if product.price %}
+				<div class="us-module-price">
+					{% if not product.special %}
+					<span class="us-module-price-actual">{{ product.price }}</span>
+					{% else %}
+					<span class="us-module-price-old">{{ product.price }}</span><span class="us-module-price-new">{{ product.special }}</span>
+					{% endif %}
+					{% if product.tax %}
+					<div class="price-tax">{{ text_tax }} {{ product.tax }}</div>
+					{% endif %}
+				</div>
+				{% if product.price_to_in is defined and product.price_to_in %}
+				<div class="us-module-price2">
+					{% if not product.special_to_in %}
+					<span class="us-module-price-actual2">{{ product.price_to_in }}</span>
+					{% else %}
+					<span class="us-module-price-old2">{{ product.price_to_in }}</span><span class="us-module-price-new2">{{ product.special_to_in }}</span>
+					{% endif %}
+				</div>
+				{% endif %}
+				{% endif %}
+			{% endif %}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[<button class="us-module-cart-btn button-cart us-cat-button-cart">{{ button_cart }}</button>]]></search>
+			<add position="replace"><![CDATA[
+			{% if product.preorder is defined and product.preorder %}
+				<button class="us-module-cart-btn button-cart us-cat-button-cart">{{ stock }}</button>
+			{% else %}
+				<button class="us-module-cart-btn button-cart us-cat-button-cart">{{ button_cart }}</button>
+			{% endif %}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[<a href="{% if product.can_buy is not empty %}javascript:void(0);{% else %}{{ product.href }}{% endif %}"{% if product.can_buy is not empty %} onclick="cart.add('{{ product.product_id }}');"{% endif %} class="us-module-cart-btn button-cart">{{ (product.stock and not product.can_buy) ? product.stock : button_cart }}</a>]]></search>
+			<add position="replace"><![CDATA[
+			{% if product.preorder is defined and product.preorder %}
+				<a href="{% if product.can_buy is not empty %}javascript:void(0);{% else %}{{ product.href }}{% endif %}"{% if product.can_buy is not empty %} onclick="cart.add('{{ product.product_id }}');"{% endif %} class="us-module-cart-btn button-cart">{{ stock }}</a>
+			{% else %}
+				<a href="{% if product.can_buy is not empty %}javascript:void(0);{% else %}{{ product.href }}{% endif %}"{% if product.can_buy is not empty %} onclick="cart.add('{{ product.product_id }}');"{% endif %} class="us-module-cart-btn button-cart">{{ (product.stock and not product.can_buy) ? product.stock : button_cart }}</a>
+			{% endif %}
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/view/theme/oct_ultrastore/template/octemplates/module/oct_products_modules.twig">
+    	<operation error="skip">
+			<search><![CDATA[{% if product.price %}]]></search>
+			<add position="replace" offset="11"><![CDATA[
+			{% if product.preorder is defined and product.preorder %}
+				{% if product.price %}
+				<div class="us-module-price">
+					<span class="us-module-price-actual">{{ stock }}</span>
+				</div>
+				{% endif %}
+			{% else %}
+				{% if product.price %}
+				<div class="us-module-price">
+					{% if not product.special %}
+					<span class="us-module-price-actual">{{ product.price }}</span>
+					{% else %}
+					<span class="us-module-price-old">{{ product.price }}</span><span class="us-module-price-new">{{ product.special }}</span>
+					{% endif %}
+					{% if product.tax %}
+					<div class="price-tax">{{ text_tax }} {{ product.tax }}</div>
+					{% endif %}
+				</div>
+				{% if product.price_to_in is defined and product.price_to_in %}
+				<div class="us-module-price2">
+					{% if not product.special_to_in %}
+					<span class="us-module-price-actual2">{{ product.price_to_in }}</span>
+					{% else %}
+					<span class="us-module-price-old2">{{ product.price_to_in }}</span><span class="us-module-price-new2">{{ product.special_to_in }}</span>
+					{% endif %}
+				</div>
+				{% endif %}
+				{% endif %}
+			{% endif %}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[<a href="{% if product.can_buy is not empty %}javascript:void(0);{% else %}{{ product.href }}{% endif %}"{% if product.can_buy is not empty %} onclick="cart.add('{{ product.product_id }}');"{% endif %} class="us-module-cart-btn button-cart">{{ (product.stock and not product.can_buy) ? product.stock : button_cart }}</a>]]></search>
+			<add position="replace"><![CDATA[
+			{% if product.preorder is defined and product.preorder %}
+				<a href="{% if product.can_buy is not empty %}javascript:void(0);{% else %}{{ product.href }}{% endif %}"{% if product.can_buy is not empty %} onclick="cart.add('{{ product.product_id }}');"{% endif %} class="us-module-cart-btn button-cart">{{ stock }}</a>
+			{% else %}
+				<a href="{% if product.can_buy is not empty %}javascript:void(0);{% else %}{{ product.href }}{% endif %}"{% if product.can_buy is not empty %} onclick="cart.add('{{ product.product_id }}');"{% endif %} class="us-module-cart-btn button-cart">{{ (product.stock and not product.can_buy) ? product.stock : button_cart }}</a>
+			{% endif %}
+			]]></add>
+    	</operation>
+	</file>
+	<file path="system/library/cart/cart.php">
+    	<operation error="skip">
+			<search><![CDATA['price'           => ($price + $option_price),]]></search>
+			<add position="replace"><![CDATA[
+			'price'           => (isset($product_query->row['preorder']) && $product_query->row['preorder']) ? 0 : ($price + $option_price),
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA['total'           => ($price + $option_price) * $cart['quantity'],]]></search>
+			<add position="replace"><![CDATA[
+			'total'           => (isset($product_query->row['preorder']) && $product_query->row['preorder']) ? 0 : ($price + $option_price) * $cart['quantity'],
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/controller/octemplates/module/oct_live_search.php">
+    	<operation error="skip">
+			<search><![CDATA[$data['products'][] = []]></search>
+			<add position="before"><![CDATA[
+			if ($product_info['preorder']) {
+				$data['stock'] = $stock = $this->language->get('text_preorder');
+				$preorder = true;
+			} else {
+				$preorder = false;
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$price = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$price_to_in = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'USD');
+			} else {
+				$price_to_in = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'UAH');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$special = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$special_to_in = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'USD');
+			} else {
+				$special_to_in = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')), 'UAH');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA['sku'     => $product_info['sku'],]]></search>
+			<add position="before"><![CDATA[
+			'preorder'       => $preorder,
+			'price_to_in'    => isset($price_to_in) ? $price_to_in : false,
+			'special_to_in'  => isset($special_to_in) ? $special_to_in : false,
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/view/theme/oct_ultrastore/template/octemplates/module/oct_live_search.twig">
+    	<operation error="skip">
+			<search><![CDATA[{% if price_setting %}]]></search>
+			<add position="replace" offset="9"><![CDATA[
+			{% if price_setting %}
+	        <div class="us-livesearch-list-item-price d-flex align-items-center">
+	        		{% if product.preorder %}
+	        			<span class="us-price-actual">{{ stock }}</span>
+	        		{% else %}
+		            {% if product.special %}
+		            <span class="us-price-new">{{ product.special }}</span>
+		             <span class="us-price-old">{{ product.price }}</span>
+		            {% else %}
+		            <span class="us-price-actual">{{ product.price }}</span>
+		            {% endif %}
+	            {% endif %}
+	        </div>
+	        {% if (product.price_to_in is defined and product.price_to_in) and not product.preorder %}
+	        <div class="us-livesearch-list-item-price2 d-flex align-items-center">
+	        		{% if product.special_to_in %}
+		            <span class="us-price-new2">{{ product.special_to_in }}</span>
+		             <span class="us-price-old2">{{ product.price_to_in }}</span>
+		        {% else %}
+		            <span class="us-price-actual2">{{ product.price_to_in }}</span>
+		        {% endif %}
+	        </div>
+	        {% endif %}
+	        {% endif %}
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/controller/checkout/cart.php">
+    	<operation error="skip">
+			<search><![CDATA[$json['total_amount'] = $this->currency->format($total, $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$json['total_amount_to_in'] = $this->currency->format($total, 'USD');
+			} else {
+				$json['total_amount_to_in'] = $this->currency->format($total, 'UAH');
+			}
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/controller/common/cart.php">
+    	<operation error="skip">
+			<search><![CDATA[$data['total_amount'] = $this->currency->format($total, $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$data['total_amount_to_in'] = $this->currency->format($total, 'USD');
+			} else {
+				$data['total_amount_to_in'] = $this->currency->format($total, 'UAH');
+			}
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/view/theme/oct_ultrastore/template/common/cart.twig">
+    	<operation error="skip">
+			<search><![CDATA[<a href="{{ checkout }}" class="us-cart-link">]]></search>
+			<add position="before"><![CDATA[
+			{% if total_amount_to_in is defined and total_amount_to_in %}
+			<p class="us-cart-text2">{{ total_amount_to_in }}</p>
+			{% endif %}
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/controller/octemplates/module/oct_popup_cart.php">
+    	<operation error="skip">
+			<search><![CDATA[$p_price = $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$p_price_to_in = $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')), 'USD');
+			} else {
+				$p_price_to_in = $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')), 'UAH');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$p_total = $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')) * $product['quantity'], $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$p_total_to_in = $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')), 'USD');
+			} else {
+				$p_total_to_in = $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')), 'UAH');
+			}
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA['total' => $p_total,]]></search>
+			<add position="after"><![CDATA[
+			'p_price_to_in' => isset($p_price_to_in) ? $p_price_to_in : false,
+			'p_total_to_in' => isset($p_total_to_in) ? $p_total_to_in : false,
+			]]></add>
+    	</operation>
+    	<operation error="skip">
+			<search><![CDATA[$json['total_amount'] = $this->currency->format($total, $this->session->data['currency']);]]></search>
+			<add position="after"><![CDATA[
+			if ($this->session->data['currency'] == 'UAH') {
+				$json['total_amount_to_in'] = $this->currency->format($total, 'USD');
+			} else {
+				$json['total_amount_to_in'] = $this->currency->format($total, 'UAH');
+			}
+			]]></add>
+    	</operation>
+	</file>
+	<file path="catalog/view/theme/oct_ultrastore/template/octemplates/module/oct_popup_cart.twig">
+    	<operation error="skip">
+			<search><![CDATA[{{ product.total }}]]></search>
+			<add position="after" offset="1"><![CDATA[
+			{% if product.p_total_to_in is defined and product.p_total_to_in %}
+			<div class="us-cart-price-all2">{{ product.p_total_to_in }}</div>
+			{% endif %}
+			]]></add>
+    	</operation>
+	</file>
+</modification>
