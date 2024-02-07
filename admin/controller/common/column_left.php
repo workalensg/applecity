@@ -34,6 +34,14 @@ class ControllerCommonColumnLeft extends Controller {
 					'children' => array()		
 				);
 			}
+
+            if ($this->user->hasPermission('access', 'batch_editor/index')) {
+                $catalog[] = array(
+                    'name'     => 'Batch Editor',
+                    'href'     => $this->url->link('batch_editor/index', 'user_token=' . $this->session->data['user_token'], true),
+                    'children' => array()
+                );
+            }
 			
 			if ($this->user->hasPermission('access', 'catalog/recurring')) {
 				$catalog[] = array(

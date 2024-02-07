@@ -580,6 +580,9 @@ findVideos();
 {% endif %}
 <script>
 $('select[name=\'recurring_id\'], input[name="quantity"]').change(function(){
+
+});
+$('select[name=\'recurring_id\'], input[name="quantity"]').change(function(){
 	$.ajax({
 		url: 'index.php?route=product/product/getRecurringDescription',
 		type: 'post',
