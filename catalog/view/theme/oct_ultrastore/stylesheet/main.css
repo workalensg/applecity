@@ -3159,20 +3159,22 @@ span.us-product-info-is {
 }
 .us-product-option .radio_list .name{
 	flex:1;
+	display: flex;
+	align-items: center;
 }
 .us-product-option .radio_list .name i{
-	color: #000;
-	font-size: 14px;
-	line-height: 20px;
-	font-weight: 600;
 	text-align: center;
-	background: #f6f6f6;
-	width: 20px;
-	height: 20px;
+	width: 16px;
+	height: 16px;
 	cursor: pointer;
-	display: inline-block;
+	display: flex;
 	border-radius: 20px;
-	font-style: normal;
+	margin-left: 5px;
+}
+
+.us-product-option .radio_list .name i svg{
+	width: 16px;
+	height: 16px;
 }
 
 .us-product-option .radio_list .o_description{
