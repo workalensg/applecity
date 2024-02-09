@@ -206,7 +206,47 @@
 										</select>
 									</div>
 									{% endif %}
-									{% if option.type == 'radio' %}
+									{% if option.type == 'radio' and option.is_description == 1 %}
+									<div class="form-group">
+										<label class="control-label">{% if option.required %}<span class="required">*</span> {% endif %}{{ option.name }}</label>
+										<div id="input-option{{ option.product_option_id }}" class="options-box d-xl-flex flex-wrap align-items-center">
+											{% for option_value in option.product_option_value %}
+											<div class="radio_list">
+												<input type="radio" id="i{{ option_value.product_option_value_id }}" name="option[{{ option.product_option_id }}]" value="{{ option_value.product_option_value_id }}" />
+												<label for="i{{ option_value.product_option_value_id }}" class="optid {{ option.product_option_id }} not-selected">
+													<span class="name">
+														{{ option_value.name }}
+														{% if option_value.description %}
+															<i>?</i>
+														{% endif %}
+													</span>
+													<span class="price">{{ option_value.price }}</span>
+
+												</label>
+												<div class="o_description">
+													<i class="close">x</i>
+													<div>
+														{{ option_value.description }}
+													</div>
+												</div>
+
+												<script>
+													$(document).ready(function() {
+														$(document).on('touchstart click', '.radio_list label .name i', function(event){
+															$(this).parent().parent().parent().append('<div class="overflow_descr"></div>');
+															$(this).parent().parent().parent().find('.o_description').show();
+														});
+														$(document).on('touchstart click', '.o_description .close', function(event){
+															$('.overflow_descr').remove();
+															$(this).parent().hide();
+														});
+													});
+												</script>
+											</div>
+											{% endfor %}
+										</div>
+									</div>
+									{% elseif option.type == 'radio' %}
 									<div class="form-group">
 										<label class="control-label">{% if option.required %}<span class="required">*</span> {% endif %}{{ option.name }}</label>
 										<div id="input-option{{ option.product_option_id }}" class="options-box d-xl-flex flex-wrap align-items-center">

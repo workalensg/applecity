@@ -55,18 +55,19 @@
                   
                 
                 {% endif %}
+
                 {% if type == 'radio' %}
-                
-                
+
+
                   <option value="radio" selected="selected">{{ text_radio }}</option>
-                  
-                
+
+
                 {% else %}
-                
-                
+
+
                   <option value="radio">{{ text_radio }}</option>
-                  
-                
+
+
                 {% endif %}
                 {% if type == 'checkbox' %}
                 
@@ -182,8 +183,9 @@
               <thead>
                 <tr>
                   <td class="text-left required">{{ entry_option_value }}</td>
-                  <td class="text-center">{{ entry_image }}</td>
-                  <td class="text-right">{{ entry_sort_order }}</td>
+                  <td class="text-left">{{ entry_image }}</td>
+                  <td class="text-left">{{ entry_sort_order }}</td>
+                  <td class="text-left">{{ entry_description }}</td>
                   <td></td>
                 </tr>
               </thead>
@@ -203,7 +205,16 @@
                   {% endfor %}</td>
                 <td class="text-left"><a href="" id="thumb-image{{ option_value_row }}" data-toggle="image" class="img-thumbnail"><img src="{{ option_value.thumb }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a>
                   <input type="hidden" name="option_value[{{ option_value_row }}][image]" value="{{ option_value.image }}" id="input-image{{ option_value_row }}" /></td>
-                <td class="text-right"><input type="text" name="option_value[{{ option_value_row }}][sort_order]" value="{{ option_value.sort_order }}" class="form-control" /></td>
+                <td class="text-left"><input type="text" name="option_value[{{ option_value_row }}][sort_order]" value="{{ option_value.sort_order }}" class="form-control" /></td>
+                <td class="text-left">
+                  <input type="hidden" name="option_value[{{ option_value_row }}][option_value_id]" value="{{ option_value.option_value_id }}" />
+                  {% for language in languages %}
+                    <div class="input-group"><span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.description }}" /></span>
+                      <textarea name="option_value[{{ option_value_row }}][option_value_description][{{ language.language_id }}][description]" placeholder="{{ entry_option_value_description }}" id="input-description{{ language.language_id }}" data-toggle="summernote" data-lang="{{ summernote }}" class="form-control">
+                        {{ option_value.option_value_description[language.language_id] ? option_value.option_value_description[language.language_id].description }}
+                      </textarea>
+                    </div>
+                  {% endfor %}</td>
                 <td class="text-right"><button type="button" onclick="$('#option-value-row{{ option_value_row }}').remove();" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>
               </tr>
               {% set option_value_row = option_value_row + 1 %}
@@ -212,7 +223,7 @@
               
               <tfoot>
                 <tr>
-                  <td colspan="3"></td>
+                  <td colspan="4"></td>
                   <td class="text-right"><button type="button" onclick="addOptionValue();" data-toggle="tooltip" title="{{ button_option_value_add }}" class="btn btn-primary"><i class="fa fa-plus-circle"></i></button></td>
                 </tr>
               </tfoot>
@@ -222,9 +233,20 @@
       </div>
     </div>
   </div>
+
+  <link href="view/javascript/codemirror/lib/codemirror.css" rel="stylesheet"/>
+  <link href="view/javascript/codemirror/theme/monokai.css" rel="stylesheet"/>
+  <script type="text/javascript" src="view/javascript/codemirror/lib/codemirror.js"></script>
+  <script type="text/javascript" src="view/javascript/codemirror/lib/xml.js"></script>
+  <script type="text/javascript" src="view/javascript/codemirror/lib/formatting.js"></script>
+  <script type="text/javascript" src="view/javascript/summernote/summernote.js"></script>
+  <link href="view/javascript/summernote/summernote.css" rel="stylesheet"/>
+  <script type="text/javascript" src="view/javascript/summernote/summernote-image-attributes.js"></script>
+  <script type="text/javascript" src="view/javascript/summernote/opencart.js"></script>
+
   <script type="text/javascript"><!--
 $('select[name=\'type\']').on('change', function() {
-	if (this.value == 'select' || this.value == 'radio' || this.value == 'checkbox' || this.value == 'image') {
+	if (this.value == 'select' || this.value == 'radio'|| this.value == 'radio_list' || this.value == 'checkbox' || this.value == 'image') {
 		$('#option-value').parent().show();
 	} else {
 		$('#option-value').parent().hide();
@@ -237,16 +259,23 @@ var option_value_row = {{ option_value_row }};
 
 function addOptionValue() {
 	html  = '<tr id="option-value-row' + option_value_row + '">';
-    html += '  <td class="text-left"><input type="hidden" name="option_value[' + option_value_row + '][option_value_id]" value="" />';
+    html += '  <td class="left"><input type="hidden" name="option_value[' + option_value_row + '][option_value_id]" value="" />';
 	{% for language in languages %}
 	html += '    <div class="input-group">';
 	html += '      <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span><input type="text" name="option_value[' + option_value_row + '][option_value_description][{{ language.language_id }}][name]" value="" placeholder="{{ entry_option_value }}" class="form-control" />';
     html += '    </div>';
 	{% endfor %}
 	html += '  </td>';
-    html += '  <td class="text-center"><a href="" id="thumb-image' + option_value_row + '" data-toggle="image" class="img-thumbnail"><img src="{{ placeholder }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a><input type="hidden" name="option_value[' + option_value_row + '][image]" value="" id="input-image' + option_value_row + '" /></td>';
-	html += '  <td class="text-right"><input type="text" name="option_value[' + option_value_row + '][sort_order]" value="" placeholder="{{ entry_sort_order }}" class="form-control" /></td>';
-	html += '  <td class="text-right"><button type="button" onclick="$(\'#option-value-row' + option_value_row + '\').remove();" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>';
+    html += '  <td class="text-left"><a href="" id="thumb-image' + option_value_row + '" data-toggle="image" class="img-thumbnail"><img src="{{ placeholder }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a><input type="hidden" name="option_value[' + option_value_row + '][image]" value="" id="input-image' + option_value_row + '" /></td>';
+	html += '  <td class="text-left"><input type="text" name="option_value[' + option_value_row + '][sort_order]" value="" placeholder="{{ entry_sort_order }}" class="form-control" /></td>';
+    html += '  <td class="left"><input type="hidden" name="option_value[' + option_value_row + '][option_value_id]" value="" />';
+    {% for language in languages %}
+      html += '    <div class="input-group">';
+      html += '      <span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.description }}" /></span><input type="text" name="option_value[' + option_value_row + '][option_value_description][{{ language.language_id }}][description]" value="" placeholder="{{ entry_option_value }}" class="form-control" />';
+      html += '    </div>';
+    {% endfor %}
+    html += '  </td>';
+    html += '  <td class="text-right"><button type="button" onclick="$(\'#option-value-row' + option_value_row + '\').remove();" data-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa fa-minus-circle"></i></button></td>';
 	html += '</tr>';
 
 	$('#option-value tbody').append(html);

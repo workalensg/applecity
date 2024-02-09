@@ -34,7 +34,7 @@ function ocFilterCheck(this_) {
      <span class="be-help">[<?php echo $value['type']; ?>]</span>
     </td>
     <td class="left">
-     <?php if ($value['type'] == 'checkbox' || $value['type'] == 'radio' || $value['type'] == 'select') { ?>
+     <?php if ($value['type'] == 'checkbox' || $value['type'] == 'radio'|| $value['type'] == 'radio_list' || $value['type'] == 'select') { ?>
      <?php if (isset ($value['value'])) { ?>
      <table>
       <?php foreach ($value['value'] as $value_id => $name) { ?>

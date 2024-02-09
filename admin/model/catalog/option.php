@@ -16,7 +16,7 @@ class ModelCatalogOption extends Model {
 				$option_value_id = $this->db->getLastId();
 
 				foreach ($option_value['option_value_description'] as $language_id => $option_value_description) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "'");
+					$this->db->query("INSERT INTO " . DB_PREFIX . "option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "', description = '" . $this->db->escape($option_value_description['description']) . "'");
 				}
 			}
 		}
@@ -47,7 +47,7 @@ class ModelCatalogOption extends Model {
 				$option_value_id = $this->db->getLastId();
 
 				foreach ($option_value['option_value_description'] as $language_id => $option_value_description) {
-					$this->db->query("INSERT INTO " . DB_PREFIX . "option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "'");
+					$this->db->query("INSERT INTO " . DB_PREFIX . "option_value_description SET option_value_id = '" . (int)$option_value_id . "', language_id = '" . (int)$language_id . "', option_id = '" . (int)$option_id . "', name = '" . $this->db->escape($option_value_description['name']) . "', description = '" . $this->db->escape($option_value_description['description']) . "'");
 				}
 			}
 
@@ -155,7 +155,10 @@ class ModelCatalogOption extends Model {
 			$option_value_description_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE option_value_id = '" . (int)$option_value['option_value_id'] . "'");
 
 			foreach ($option_value_description_query->rows as $option_value_description) {
-				$option_value_description_data[$option_value_description['language_id']] = array('name' => $option_value_description['name']);
+				$option_value_description_data[$option_value_description['language_id']] = array(
+				    'name' => $option_value_description['name'],
+				    'description' => $option_value_description['description']
+                );
 			}
 
 			$option_value_data[] = array(

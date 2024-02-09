@@ -31,8 +31,10 @@ $_['column_action']       = 'Дія';
 $_['entry_name']          = 'Назва опції';
 $_['entry_type']          = 'Тип';
 $_['entry_option_value']  = 'Значення опції';
+$_['entry_option_value_description'] = 'Додатковий опис';
 $_['entry_image']         = 'Зображення';
 $_['entry_sort_order']    = 'Порядок сортування';
+$_['entry_description']    = 'Додатковий опис';
 
 // Error
 $_['error_permission']    = 'У вас недостатньо прав для внесення змін';

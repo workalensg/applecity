@@ -10,6 +10,7 @@ $_['text_edit']          = 'Редактирование';
 $_['text_choose']        = 'Выбор';
 $_['text_select']        = 'Список';
 $_['text_radio']         = 'Переключатель';
+$_['text_radio_list']         = 'Переключатель с подсказкой';
 $_['text_checkbox']      = 'Флажок';
 $_['text_input']         = 'Поле ввода';
 $_['text_text']          = 'Текст';
@@ -30,8 +31,10 @@ $_['column_action']      = 'Действие';
 $_['entry_name']         = 'Название опции';
 $_['entry_type']         = 'Тип';
 $_['entry_option_value'] = 'Значение опции';
+$_['entry_option_value_description'] = 'Дополнительное описание';
 $_['entry_image']        = 'Изображение';
 $_['entry_sort_order']   = 'Порядок сортировки';
+$_['entry_description']   = 'Дополнительное описание';
 
 // Error
 $_['error_permission']   = 'У вас не достаточно прав для изменения опции!';
